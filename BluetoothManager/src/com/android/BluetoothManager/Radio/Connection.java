@@ -441,6 +441,7 @@ public class Connection {
 
 	}
 
+	
 	// Send a message from radio to routing
 	private void communicateFromRadioToRouting(String address, String message) {
 		String ACTION = bluetooth_manager.getResources().getString(
