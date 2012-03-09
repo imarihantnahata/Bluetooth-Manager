@@ -53,16 +53,6 @@ public class PacketHandlerService extends Thread {
 					temp_radio = itr_radio.next();
 					this.processRadioPacket(temp_radio);
 				}
-				
-				if(RouteTable.bluetooth_manager.connection.getBluetoothAdapter().isEnabled())
-				{
-					if (RouteTable.bluetooth_manager.connection						
-						.getBluetoothAdapter().getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-
-					RouteTable.bluetooth_manager.connection
-							.makeDeviceDisocverable();
-					}
-				}
 
 				Thread.sleep(2000);
 			}
