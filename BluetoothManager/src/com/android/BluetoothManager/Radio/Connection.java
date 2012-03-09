@@ -110,6 +110,7 @@ public class Connection {
 		bluetooth_manager.registerReceiver(receiver, i);
 
 		startRadio();
+		maintainence_thread= new gc_thread();
 		maintainence_thread.start();
 	}
 
@@ -628,36 +629,35 @@ public class Connection {
 			while(true)
 			{
 				it = BtStreamWatcherThreads.entrySet().iterator();
-			    while (it.hasNext()) {
-			        try{
-			        	Map.Entry pairs = (Map.Entry)it.next();
-				        time=((BtStreamWatcher)pairs.getValue()).getLastReceived();
-				        if(System.currentTimeMillis()/1000-time>60)
-				        {
-				        	String address= (String) pairs.getKey();
-				        	BtStreamWatcher listener= (BtStreamWatcher) pairs.getValue();
-				        	it.remove();
-				        	listener.stop();
-				        	BluetoothSocket myBtSocket= BtSockets.get(address);
-				        	myBtSocket.close();
-				        	BtSockets.remove(address);
-				        	BtConnectedDeviceAddresses.remove(address);
-				        	Log.d(TAG,"Disconnected "+address);
-				        }
-				        Thread.sleep(30000);
-				        Log.d(TAG,"Doing Maintainence");
-			        }
-			    	catch(IOException e)
-			    	{
-			    		Log.d(TAG,"Failed to close socket"+e.getMessage());
+				Log.d(TAG,"Doing Maintainence");
+			    try{
+			    	while (it.hasNext()) {
+				        Map.Entry pairs = (Map.Entry)it.next();
+					    time=((BtStreamWatcher)pairs.getValue()).getLastReceived();
+					    if(System.currentTimeMillis()/1000-time>60)
+					    {
+					     	String address= (String) pairs.getKey();
+					       	BtStreamWatcher listener= (BtStreamWatcher) pairs.getValue();
+					       	it.remove();
+					       	listener.stop();
+					       	BluetoothSocket myBtSocket= BtSockets.get(address);
+					       	myBtSocket.close();
+					       	BtSockets.remove(address);
+					       	BtConnectedDeviceAddresses.remove(address);
+					       	Log.d(TAG,"Disconnected "+address);
+					    }
 			    	}
-			        catch(InterruptedException e)
-			        {
-			        	Log.d(TAG,"Garbage Collection Thread Interrupted!!");
-			        }
-			        
-				}
-			   	Log.d(TAG,"Connections are :"+getConnections());
+			    	Thread.sleep(30000);
+				   	Log.d(TAG,"Connections are :"+getConnections());
+			    }
+			    catch(IOException e)
+		    	{
+		    		Log.d(TAG,"Failed to close socket"+e.getMessage());
+		    	}
+		        catch(InterruptedException e)
+		        {
+		        	Log.d(TAG,"Garbage Collection Thread Interrupted!!");
+		        }			        
 			}
 		}
 	}
