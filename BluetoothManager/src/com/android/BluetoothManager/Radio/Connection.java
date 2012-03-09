@@ -202,7 +202,7 @@ public class Connection {
 	 */
 	public int broadcastMessage(String message) throws RemoteException {
 
-		appStartDiscovery();
+		startDiscovery();
 		connectToFoundDevices();
 		int size = BtConnectedDeviceAddresses.size();
 		for (int i = 0; i < size; i++) {
@@ -258,8 +258,8 @@ public class Connection {
 		return BtAdapter;
 	}
 
-	/* 
-	 * 
+	/* Function that will return the devices that
+	 * are already paired, but not necessarily in range 
 	 */
 	public HashMap<String, String> getPairedDevices() {
 
@@ -271,6 +271,9 @@ public class Connection {
 		return BtBondedDevices;
 	}
 
+	/* Function that will make connections to only the devices which are found. 
+	 * They have to be discoverable and within range
+	 */
 	public void connectToFoundDevices() {
 		Log.d(TAG, "connectToFoundDevices() called");
 		Iterator devices = BtFoundDevices.entrySet().iterator();
@@ -289,19 +292,12 @@ public class Connection {
 		}
 	}
 
-	/* 
-	 */
-	public void appStartDiscovery() {
-		
-	}
-
 	public void makeDeviceDisocverable() {
 		Log.d(TAG, "Making Device Discoverable.");
 		Intent i = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 		i.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 3600);
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		bluetooth_manager.startActivity(i);
-		Log.d(TAG, "Made Device Discoverable");
 	}
 
 	public boolean isMyFriend(String address) {
@@ -350,10 +346,8 @@ public class Connection {
 	 * other node has our application running or not.
 	 */
 	public void startFriendServer() {
-		//(new Thread(new FriendServer())).start();
+		(new Thread(new FriendServer())).start();
 	}
-
-	
 
 	/*
 	 * Function to be called when Application starts and later when Bluetooth 
