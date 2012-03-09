@@ -78,6 +78,8 @@ public class Connection {
 	HashMap<String, Thread> BtStreamWatcherThreads;
 
 	BluetoothManagerApplication bluetooth_manager;
+	
+	gc_thread maintainence_thread;
 
 	private long lastDiscovery = 0; // Stores the time of the last discovery
 
@@ -108,6 +110,7 @@ public class Connection {
 		bluetooth_manager.registerReceiver(receiver, i);
 
 		startRadio();
+		maintainence_thread.start();
 	}
 
 	/* Function that will start Discovery only if it was done
@@ -212,7 +215,7 @@ public class Connection {
 	}
 
 	//For debugging. To print connections at a certain point of time
-	public String getConnections(String srcApp) throws RemoteException {
+	public String getConnections(){
 
 		String connections = "";
 		int size = BtConnectedDeviceAddresses.size();
@@ -492,25 +495,26 @@ public class Connection {
 				// Do something when the search finishes.
 				Log.d(TAG, "Service Discovery Finished !");
 			} else if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-				Log.d(TAG,"Bluetooth State Changed");
-				String state = intent.getStringExtra(BluetoothAdapter.ACTION_STATE_CHANGED);
-				Log.d(TAG,"State: "+state);
-				/*if (state == BluetoothAdapter.STATE_TURNING_OFF) {
-					Log.d(TAG,"Bluetooth is turning Off, stopping radio");
+				Log.d(TAG, "Bluetooth State Changed");
+				int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+						BluetoothAdapter.ERROR);
+				Log.d(TAG, "State: " + state);
+				if (state == BluetoothAdapter.STATE_TURNING_OFF) {
+					Log.d(TAG, "Bluetooth is turning Off, stopping radio");
 					stopRadio();
 				} else {
-					if (state==BluetoothAdapter.STATE_ON) {
-						Log.d(TAG,"Bluetooth is on, starting radio");
+					if (state == BluetoothAdapter.STATE_ON) {
+						Log.d(TAG, "Bluetooth is on, starting radio");
 						startRadio();
 					}
-				}*/
-
+				}
 			}
 		}
 	};
 
 	/*
-	 * This class is responsible for listening for new connections. Once a
+	 
+	/* This class is responsible for listening for new connections. Once a
 	 * connections is accepted, a new thread is created to manage the i/p, o/p
 	 * with the newly established connection
 	 */
@@ -548,10 +552,15 @@ public class Connection {
 	/*
 	 * Thread which maintains the I/O of one stream for one device
 	 */
-	private class BtStreamWatcher implements Runnable {
+	private class BtStreamWatcher extends Thread {
 		private String address;
-		long lastReceived=0;
+		private long lastReceived=0;
 
+		public long getLastReceived()
+		{
+			return lastReceived;
+		}
+		
 		public BtStreamWatcher(String deviceAddress) {
 			address = deviceAddress;
 		}
@@ -604,6 +613,53 @@ public class Connection {
 		}
 	}
 	
-	
+	/* Thread that will destroy all the threads on which there is no communication 
+	 * since the last minute. It will check the lastReceived value of the StreamWatcher
+	 * Compare it with current time. If more than a minute, kill the thread and
+	 * remove the socket.
+	 */
+	private class gc_thread extends Thread{
+		
+		Iterator it;
+		
+		public void run()
+		{
+			long time;
+			while(true)
+			{
+				it = BtStreamWatcherThreads.entrySet().iterator();
+			    while (it.hasNext()) {
+			        try{
+			        	Map.Entry pairs = (Map.Entry)it.next();
+				        time=((BtStreamWatcher)pairs.getValue()).getLastReceived();
+				        if(System.currentTimeMillis()/1000-time>60)
+				        {
+				        	String address= (String) pairs.getKey();
+				        	BtStreamWatcher listener= (BtStreamWatcher) pairs.getValue();
+				        	it.remove();
+				        	listener.stop();
+				        	BluetoothSocket myBtSocket= BtSockets.get(address);
+				        	myBtSocket.close();
+				        	BtSockets.remove(address);
+				        	BtConnectedDeviceAddresses.remove(address);
+				        	Log.d(TAG,"Disconnected "+address);
+				        }
+				        Thread.sleep(30000);
+				        Log.d(TAG,"Doing Maintainence");
+			        }
+			    	catch(IOException e)
+			    	{
+			    		Log.d(TAG,"Failed to close socket"+e.getMessage());
+			    	}
+			        catch(InterruptedException e)
+			        {
+			        	Log.d(TAG,"Garbage Collection Thread Interrupted!!");
+			        }
+			        
+				}
+			   	Log.d(TAG,"Connections are :"+getConnections());
+			}
+		}
+	}
 
 }
