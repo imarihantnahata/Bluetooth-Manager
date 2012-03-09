@@ -389,8 +389,12 @@ public class Connection {
 			return Connection.FAILURE;
 		}
 		if (BtAdapter.isEnabled()) {
-			server_thread=new Thread(new ConnectionWaiter());
-			server_thread.start();
+			if(server_thread==null)
+			{
+				server_thread=new Thread(new ConnectionWaiter());
+				server_thread.start();
+			}
+			
 			Log.d(TAG, " ++ Server Started ++");
 			server_isRunning = true;
 			return Connection.SUCCESS;
@@ -531,7 +535,8 @@ public class Connection {
 
 		public void run() {
 			try {
-				for (int i = 0; i < Connection.MAX_CONNECTIONS_SUPPORTED; i++) {
+				for(int i=0;server_isRunning;i++)
+				{
 					BluetoothServerSocket myServerSocket = BtAdapter
 							.listenUsingRfcommWithServiceRecord(service_name,
 									Uuids.get(i));
@@ -548,9 +553,12 @@ public class Connection {
 							new BtStreamWatcher(address));
 					BtStreamWatcherThread.start();
 					BtStreamWatcherThreads.put(address, BtStreamWatcherThread);
-
+					if(i==Connection.MAX_CONNECTIONS_SUPPORTED-1)
+					{
+						i=0;
+					}
 				}
-
+				
 			} catch (IOException e) {
 				Log.i(TAG, "IOException in ConnectionService:ConnectionWaiter",
 						e);
