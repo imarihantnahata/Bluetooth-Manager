@@ -110,8 +110,31 @@ public class Connection {
 		startRadio();
 	}
 
-	/*
-	 * Function that will try to establish a connection
+	/* Function that will start Discovery only if it was done
+	 * more than a minute ago
+	 */
+	public void startDiscovery()
+	{
+		if (BtAdapter.isDiscovering()) {
+			return;
+		}
+		Log.d(TAG, "Starting Discovery !!");
+		if (System.currentTimeMillis() / 1000 - lastDiscovery > 60) {
+			BtAdapter.startDiscovery();
+			lastDiscovery = System.currentTimeMillis() / 1000;
+			try {
+				Thread.sleep(12000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/* Function to connect to a remote device.
+	 * Will first check if already connected. If not, it will try
+	 * to create a socket from the list of 7 UUID's on the device.
+	 * If found, it will create a watcher thread for that device and
+	 * add to the connected devices and start listening
 	 */
 	private int connect(String device) throws RemoteException {
 
@@ -130,10 +153,10 @@ public class Connection {
 		for (int i = 0; i < Connection.MAX_CONNECTIONS_SUPPORTED
 				&& myBSock == null; i++) {
 			myBSock = getConnectedSocket(myBtServer, Uuids.get(i));
-			Log.d(TAG, "After getConnectedSocket(): " + myBSock);
+			
 			if (myBSock == null) {
 				try {
-					Thread.sleep(25);
+					Thread.sleep(10);
 				} catch (InterruptedException e) {
 					Log.e(TAG, "InterruptedException in connect", e);
 				}
@@ -153,13 +176,17 @@ public class Connection {
 		return Connection.SUCCESS;
 	}
 
+	/* Function that returns a connection socket if connection
+	 * succeeds on the particular uuid on the myBtServer, i.e, remote device
+	 */
 	private BluetoothSocket getConnectedSocket(BluetoothDevice myBtServer,
 			UUID uuidToTry) {
 		BluetoothSocket myBSock;
 		try {
 			myBSock = myBtServer.createRfcommSocketToServiceRecord(uuidToTry);
 			Log.d(TAG,
-					"Trying to connect to socket of:" + myBtServer.getAddress());
+					"Trying to connect to socket of:" + myBtServer.getAddress()
+					+ " with UUID +"+uuidToTry);
 			myBSock.connect();
 			return myBSock;
 		} catch (IOException e) {
@@ -169,6 +196,10 @@ public class Connection {
 		return null;
 	}
 
+	/* Function that will broadcast RREQ's.
+	 * Will first search for all found devices. Will then connect
+	 * to all found devices and send an RREQ to them.
+	 */
 	public int broadcastMessage(String message) throws RemoteException {
 
 		appStartDiscovery();
@@ -180,6 +211,7 @@ public class Connection {
 		return Connection.SUCCESS;
 	}
 
+	//For debugging. To print connections at a certain point of time
 	public String getConnections(String srcApp) throws RemoteException {
 
 		String connections = "";
@@ -190,6 +222,10 @@ public class Connection {
 		return connections;
 	}
 
+	/* Method that actually sends the stream of bytes to a remote device.
+	 * First tries to connect. If successful, writes data after
+	 * fetching its socket
+	 */
 	public int sendMessageToDestination(String destination, String message)
 			throws RemoteException {
 
@@ -218,28 +254,20 @@ public class Connection {
 		return BtAdapter.getAddress();
 	}
 
-	public String getName() throws RemoteException {
-		return BtAdapter.getName();
-	}
-
 	public BluetoothAdapter getBluetoothAdapter() {
 		return BtAdapter;
 	}
 
-	/*
+	/* 
 	 * 
 	 */
-	public HashMap<String, String> getConnectableDevices() {
+	public HashMap<String, String> getPairedDevices() {
 
 		Set<BluetoothDevice> devices = BtAdapter.getBondedDevices();
 		for (BluetoothDevice device : devices) {
 			BtBondedDevices.put(device.getAddress(), device.getName());
 		}
-		if (BtAdapter.isDiscovering()) {
-			BtAdapter.cancelDiscovery();
-		}
-		Log.d(TAG, "Starting Discovery !!");
-		appStartDiscovery();
+
 		return BtBondedDevices;
 	}
 
@@ -261,22 +289,10 @@ public class Connection {
 		}
 	}
 
-	/*
-	 * Discover devices only if the last discovery was made a minute ago.
+	/* 
 	 */
 	public void appStartDiscovery() {
-		if (BtAdapter.isDiscovering()) {
-			return;
-		}
-		if (System.currentTimeMillis() / 1000 - lastDiscovery > 60) {
-			BtAdapter.startDiscovery();
-			lastDiscovery = System.currentTimeMillis() / 1000;
-			try {
-				Thread.sleep(12000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		
 	}
 
 	public void makeDeviceDisocverable() {
@@ -540,6 +556,7 @@ public class Connection {
 	 */
 	private class BtStreamWatcher implements Runnable {
 		private String address;
+		long lastReceived=0;
 
 		public BtStreamWatcher(String deviceAddress) {
 			address = deviceAddress;
@@ -568,7 +585,9 @@ public class Connection {
 
 						Log.d(TAG, "Received " + message + " from " + address
 								+ "In Connection");
+						lastReceived=System.currentTimeMillis()/1000;
 						communicateFromRadioToRouting(address, message);
+						
 					}
 				}
 			} catch (IOException e) {
@@ -590,5 +609,7 @@ public class Connection {
 			}
 		}
 	}
+	
+	
 
 }

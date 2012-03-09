@@ -121,7 +121,7 @@ public class BluetoothManagerApplication extends Application {
 	}
 
 	public HashMap<String, String> getConnectableDevices() {
-		return connection.getConnectableDevices();
+		return connection.getPairedDevices();
 	}
 
 	// This class iS SOLELY for testing Chat UI

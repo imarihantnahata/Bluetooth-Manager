@@ -32,8 +32,9 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.device_list);
+		bluetooth_manager.connection.startDiscovery();
 		bluetooth_manager = (BluetoothManagerApplication) getApplication();
-		btPaired = bluetooth_manager.connection.getConnectableDevices();
+		btPaired = bluetooth_manager.connection.getPairedDevices();
 		lv = (ListView) findViewById(R.id.paired_devices);
 		bondedDevices = new ArrayAdapter<String>(this, R.layout.device_name);
 		Iterator devices = btPaired.entrySet().iterator();
