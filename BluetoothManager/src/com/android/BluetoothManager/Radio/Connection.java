@@ -23,7 +23,6 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
-import com.android.BluetoothManager.Routing.RouteTable;
 import com.android.BluetoothManager.UI.R;
 
 public class Connection {
@@ -36,18 +35,20 @@ public class Connection {
 
 	public static final int FAILURE = 1;
 
-	private boolean server_started = false;
+	private boolean server_isRunning = false;
 
-	BluetoothAdapter BtAdapter;
+	private BluetoothAdapter BtAdapter;
+	
+	private Thread server_thread;
 
-	String service_name = "BluetoothManagerService"; // Random String
+	private String service_name = "BluetoothManagerService"; // Random String
 														// used for
 														// starting
 														// server.
 
-	String friend_service_name = "Friend_Service"; // Random String
+	private String friend_service_name = "Friend_Service"; // Random String
 
-	ArrayList<UUID> Uuids; // List of UUID's
+	private ArrayList<UUID> Uuids; // List of UUID's
 
 	UUID friend_uuid; // UUID to check if this application is running on other
 						// phone or not.
@@ -83,10 +84,7 @@ public class Connection {
 	public Connection(BluetoothManagerApplication bluetooth_manager) {
 
 		Log.d(TAG, "Started at");
-		BtAdapter = BluetoothAdapter.getDefaultAdapter();
-		if (BtAdapter != null) {
-			BtAdapter.enable();
-		}
+		
 
 		this.bluetooth_manager = bluetooth_manager;
 
@@ -110,20 +108,6 @@ public class Connection {
 		bluetooth_manager.registerReceiver(receiver, i);
 
 		startRadio();
-	}
-
-	public int startServer() {
-
-		if (server_started) {
-			return Connection.FAILURE;
-		}
-		if (BtAdapter.isEnabled()) {
-			(new Thread(new ConnectionWaiter())).start();
-			Log.d(TAG, " ++ Server Started ++");
-			server_started = true;
-			return Connection.SUCCESS;
-		}
-		return Connection.FAILURE;
 	}
 
 	/*
@@ -350,37 +334,18 @@ public class Connection {
 	 * other node has our application running or not.
 	 */
 	public void startFriendServer() {
-		(new Thread(new FriendServer())).start();
+		//(new Thread(new FriendServer())).start();
 	}
 
-	/*
-	 * Function called when Bluetooth will be turned off Stops the thread which
-	 * listens for other connections Cleans up resources, removes the threads
-	 * for GC and make the Routing thread wait till it is started again
-	 */
-	private void stopRadio() {
-		try {
-			int size = BtConnectedDeviceAddresses.size();
-			for (int i = 0; i < size; i++) {
-				BluetoothSocket myBsock = BtSockets
-						.get(BtConnectedDeviceAddresses.get(i));
-				myBsock.close();
-			}
-			BtSockets = null;// new HashMap<String, BluetoothSocket>();
-			BtStreamWatcherThreads = null;// new HashMap<String, Thread>();
-			BtConnectedDeviceAddresses = null;// new ArrayList<String>();
-			BtFoundDevices = null;// new ArrayList<String>();
-		} catch (IOException e) {
-			Log.d(TAG,"Error in stopRadio(). "+e.getMessage());
-		}
-	}
+	
 
 	/*
-	 * Function to be called when Bluetooth will be turned on Will instantiate
-	 * the threads and start the main Server thread that listens to other
-	 * connections
+	 * Function to be called when Application starts and later when Bluetooth 
+	 * is turned on. Instantiates the lists, checks if Adapter is enabled and starts 
+	 * the server thread
 	 */
-	private void startRadio() {
+	public int startRadio() {
+			
 		BtSockets = new HashMap<String, BluetoothSocket>();
 
 		BtConnectedDeviceAddresses = new ArrayList<String>();
@@ -390,9 +355,60 @@ public class Connection {
 		BtFoundDevices = new HashMap<String, String>();
 
 		BtStreamWatcherThreads = new HashMap<String, Thread>();
+		
+		BtAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (BtAdapter != null) {
+			BtAdapter.enable();
+		}
+		
+		if (server_isRunning) {
+			return Connection.FAILURE;
+		}
+		if (BtAdapter.isEnabled()) {
+			server_thread=new Thread(new ConnectionWaiter());
+			server_thread.start();
+			Log.d(TAG, " ++ Server Started ++");
+			server_isRunning = true;
+			return Connection.SUCCESS;
+		}
+		return Connection.FAILURE;
 
 	}
 
+	/*
+	 * Function called when Bluetooth will be turned off. Stops the thread which
+	 * listens for other connections. Removes sockets and other lists
+	 * for GC and make the Routing thread wait till it is started again
+	 */
+	public int stopRadio() {
+		if(server_isRunning)
+		{
+			try {
+				int size = BtConnectedDeviceAddresses.size();
+				for (int i = 0; i < size; i++) {
+					BluetoothSocket myBsock = BtSockets
+							.get(BtConnectedDeviceAddresses.get(i));
+					myBsock.close();
+				}
+				BtSockets = null;
+				BtStreamWatcherThreads = null;
+				BtConnectedDeviceAddresses = null;
+				BtFoundDevices = null;
+				server_thread.interrupt();
+				server_isRunning=false;
+				Log.d(TAG, " ++ Server Stopped ++");
+			} catch (IOException e) {
+				Log.d(TAG,"Error in stopRadio(). "+e.getMessage());
+			}
+			return Connection.SUCCESS;
+		}
+		else
+		{
+			return Connection.FAILURE;
+		}
+		
+	}
+	
 	private void communicateFromRadioToRouting(String address, String message) {
 		String ACTION = bluetooth_manager.getResources().getString(
 				R.string.RADIO_TO_ROUTING);
@@ -466,19 +482,18 @@ public class Connection {
 				// Do something when the search finishes.
 				Log.d(TAG, "Service Discovery Finished !");
 			} else if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-				/*
-				 * Check if Local bluetooth adapter is on or off and make
-				 * changes accordingly.
-				 */
-
-				String state = intent.getStringExtra(BtAdapter.EXTRA_STATE);
-				if (state.equals(BtAdapter.STATE_TURNING_OFF)) {
+				Log.d(TAG,"Bluetooth State Changed");
+				String state = intent.getStringExtra(BluetoothAdapter.ACTION_STATE_CHANGED);
+				Log.d(TAG,"State: "+state);
+				/*if (state == BluetoothAdapter.STATE_TURNING_OFF) {
+					Log.d(TAG,"Bluetooth is turning Off, stopping radio");
 					stopRadio();
 				} else {
-					if (state.equals(BtAdapter.STATE_ON)) {
+					if (state==BluetoothAdapter.STATE_ON) {
+						Log.d(TAG,"Bluetooth is on, starting radio");
 						startRadio();
 					}
-				}
+				}*/
 
 			}
 		}

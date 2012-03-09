@@ -50,7 +50,7 @@ public class BluetoothManagerApplication extends Application {
 		 */
 		Log.d(TAG, "Instantiating the Radio layer and starting ");
 		connection = new Connection(this);
-		connection.startServer();
+		connection.startRadio();
 
 		/* Start the friend server which is used to determine if node runs our
 		 * application or not
