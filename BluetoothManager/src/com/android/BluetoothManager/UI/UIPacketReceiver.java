@@ -53,9 +53,8 @@ public class UIPacketReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 
 		String device = intent.getStringExtra("device");
-		String name = intent.getStringExtra("name");
 		String msg = intent.getStringExtra("msg");
-
+		String name = adapter.getTitle(adapter.deviceAddresses.indexOf(device));
 		Log.d(TAG, "Received msg:" + msg + " from:" + device);
 
 		// Find the type of packet received. i.e. chat or msg
@@ -83,7 +82,7 @@ public class UIPacketReceiver extends BroadcastReceiver {
 			Log.d(TAG, "Device found: " + device);
 			ArrayAdapter<String> chatAdapter = conversation_map.get(device);
 			Log.d(TAG, "chatAdapter:" + chatAdapter);
-			chatAdapter.add(name + ": " + msg);
+			chatAdapter.add(name+":"+ msg);
 			chatAdapter.notifyDataSetChanged();
 		} else {
 			adapter.addDevice(device, name, msg);
