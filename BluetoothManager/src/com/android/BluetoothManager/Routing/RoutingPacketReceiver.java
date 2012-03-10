@@ -47,6 +47,10 @@ public class RoutingPacketReceiver extends BroadcastReceiver {
 		if (intent.getAction().equals(
 				bluetooth_manager.getResources().getString(
 						R.string.UI_TO_ROUTING))) {
+			bluetooth_manager.ui_handler.obtainMessage(2,
+					"Received: " + msg + " from UI for deivce" + device)
+					.sendToTarget();
+
 			UIPacket ui_packet = new UIPacket(device, msg);
 			Log.d(TAG, "Pushing down msg: " + msg + " to " + device
 					+ " on queue");
@@ -55,6 +59,10 @@ public class RoutingPacketReceiver extends BroadcastReceiver {
 		} else if (intent.getAction().equals(
 				bluetooth_manager.getResources().getString(
 						R.string.RADIO_TO_ROUTING))) {
+			bluetooth_manager.ui_handler.obtainMessage(2,
+					"Received: " + msg + " from Radio for deivce" + device)
+					.sendToTarget();
+
 			RadioPacket radio_packet = new RadioPacket(device, msg);
 			Log.d(TAG, "Pushing up msg: " + msg + " from " + device
 					+ " on queue");
@@ -67,7 +75,7 @@ public class RoutingPacketReceiver extends BroadcastReceiver {
 		int ui_queue_size = objectsFromUI.size();
 		int radio_queue_size = objectsFromRadio.size();
 
-		Iterator itr;
+		Iterator<?> itr;
 		if (ui_queue_size > 0) {
 			Log.d(TAG, "Size of UI Queue:" + ui_queue_size);
 			itr = objectsFromUI.iterator();

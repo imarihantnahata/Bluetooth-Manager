@@ -86,7 +86,7 @@ public class RouteTable {
 			unicastRREP(device, rrep);
 		} else {
 			rreq.setHop_count(rreq.getHop_count() + 1);
-			
+			Log.d(TAG,"Broadcasting RREQ for "+ rreq.getDest_addr());
 			broadcastRREQ(rreq);
 		}
 	}

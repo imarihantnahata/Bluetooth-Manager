@@ -27,6 +27,7 @@ public class RadioPacketReceiver extends BroadcastReceiver{
 		Log.d(TAG,"Received:"+msg+" from:"+device);
 		try {
 			if(device == null){
+				Log.d(TAG, "Broadcasting msg:"+msg);
 				bluetooth_manager.connection.broadcastMessage(msg);
 				return;
 			}

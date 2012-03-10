@@ -22,16 +22,17 @@
         android:orientation="horizontal" >
 
         <EditText
-            android:id="@+id/edit_text_out"
+            android:id="@+id/edit_text_chat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/button_send"
+            android:id="@+id/chat_button_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="sendChatMsg"
             android:text="@string/send" />
     </LinearLayout>
 

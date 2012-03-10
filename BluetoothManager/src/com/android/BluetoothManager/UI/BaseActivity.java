@@ -1,8 +1,12 @@
 package com.android.BluetoothManager.UI;
 
+import com.android.BluetoothManager.Application.BluetoothManagerApplication;
+import com.android.BluetoothManager.UI.viewpager.TitlePageIndicator;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,11 +15,21 @@ import android.widget.Toast;
 public class BaseActivity extends Activity {
 
 	private String TAG = "BaseActivity";
+
+	ViewPagerAdapter adapter;
+	ViewPager pager;
+
+	TitlePageIndicator indicator;
+
+	BluetoothManagerApplication bluetooth_manager;
+
 	int GET_DEVICE_FOR_CHAT = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		bluetooth_manager = (BluetoothManagerApplication) getApplication();
 	}
 
 	@Override
@@ -47,16 +61,29 @@ public class BaseActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d(TAG, "ActivityResult Called");
 		if (requestCode == GET_DEVICE_FOR_CHAT && resultCode == RESULT_OK) {
 			String device = data
 					.getStringExtra(DeviceListActivity.DEVICE_ADDRESS);
-			Toast.makeText(this, device, Toast.LENGTH_SHORT).show();
-			Intent intent = new Intent();
-			intent.setAction(getResources().getString(R.string.UI_TO_ROUTING));
-			intent.putExtra("layer", "UI");
-			intent.putExtra("device", device);
-			intent.putExtra("msg", "chat,Hello RREQ");
-			sendBroadcast(intent);
+			String name = data.getStringExtra(DeviceListActivity.DEVICE_NAME);
+			Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+
+			Log.d(TAG, "Name of the new Device: " + name);
+			int count = bluetooth_manager.ui_packet_receiver.adapter.getCount();
+			Log.d(TAG, "No of Chats:" + count);
+			if (!bluetooth_manager.ui_packet_receiver.conversation_map
+					.containsKey(device)) {
+				bluetooth_manager.ui_packet_receiver.adapter.addDevice(device,
+						name, "");
+				bluetooth_manager.ui_packet_receiver.adapter
+						.notifyDataSetChanged();
+				bluetooth_manager.ui_packet_receiver.indicator
+						.notifyDataSetChanged();
+				pager.setCurrentItem(count);
+			} else {
+				pager.setCurrentItem(bluetooth_manager.ui_packet_receiver.adapter.deviceAddresses
+						.indexOf(device));
+			}
 		}
 	}
 

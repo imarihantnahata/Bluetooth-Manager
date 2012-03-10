@@ -19,9 +19,11 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 
 	public Context context;
 	private final String TAG = "ViewPagerAdapter";
+
+	public ArrayList<String> deviceAddresses;
 	private ArrayList<String> deviceNames;
 	private ArrayList<ListView> listViews;
-	private ArrayAdapter<String> currentAdapter;
+	
 	HashMap<String, ArrayAdapter<String>> conversation_map;
 
 	public ViewPagerAdapter(Context context,
@@ -33,19 +35,46 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 		this.conversation_map = conversation_map;
 
 		this.deviceNames = new ArrayList<String>();
+		this.deviceAddresses = new ArrayList<String>();
 		this.listViews = new ArrayList<ListView>();
+
 	}
 
+	public void addDevice(String device, String name, String msg) {
+
+		ListView v = new ListView(context);
+		deviceNames.add(name);
+		deviceAddresses.add(device);
+		listViews.add(v);
+
+		ArrayAdapter<String> newAdapter = new ArrayAdapter<String>(context, R.layout.chat_msg);
+		if(!msg.equals("")){
+			newAdapter.add(name + ":" + msg);
+		}
+		
+		v.setAdapter(newAdapter);
+		conversation_map.put(device, newAdapter);
+		
+		Log.d(TAG, "Device added:" + device + "Adapter:" + newAdapter);
+	}
+
+	public ArrayAdapter<String> getChatAdapter(int position) {
+		return conversation_map.get(deviceAddresses.get(position));
+	}
+
+	public String getDevice(int position) {
+		return deviceAddresses.get(position);
+	}
+	
 	@Override
 	public String getTitle(int position) {
 		Log.d(TAG, " +++ getTitle() Called");
-
 		return deviceNames.get(position);
 	}
 
 	@Override
 	public int getCount() {
-		Log.d(TAG, " +++ getCount() Called");
+		Log.d(TAG, " +++ getCount() Called"+ deviceNames.size());
 		return deviceNames.size();
 	}
 
@@ -55,20 +84,6 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 		ListView v = listViews.get(position);
 		((ViewPager) pager).addView(v, 0);
 		return v;
-	}
-
-	public void addDevice(String device, String name, String msg) {
-
-		ListView v = new ListView(context);
-		deviceNames.add(name);
-		listViews.add(v);
-
-		currentAdapter = new ArrayAdapter<String>(context, R.layout.chat_msg);
-		currentAdapter.add(name + ": " + msg);
-
-		v.setAdapter(currentAdapter);
-		conversation_map.put(device, currentAdapter);
-		Log.d(TAG, "Device added:" + device + "Adapter:" + currentAdapter);
 	}
 
 	@Override
@@ -103,4 +118,5 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 	public void startUpdate(View view) {
 		Log.d(TAG, " +++ startUpdate Called");
 	}
+
 }

@@ -14,24 +14,27 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
+import com.android.BluetoothManager.UI.viewpager.TitlePageIndicator;
 
 public class UIPacketReceiver extends BroadcastReceiver {
 
+	// This HashMap is used to map
 	public HashMap<String, ArrayAdapter<String>> conversation_map;
 
 	private final String TAG = "UIPacketReceiver";
 
+	// These fields define the type of packet at the UI level.
 	private String MSG_TYPE = "msg";
 	private String CHAT_TYPE = "chat";
 
 	private int NOTIFICATION_ID = 1;
 
-	// Members related to ChatUI
-	public ViewPagerAdapter adapter;
-
 	String notification_string = Context.NOTIFICATION_SERVICE;
 	NotificationManager notification_service;
 
+	// Adapter that holds all the ListViews, Device names and their MAC address
+	public ViewPagerAdapter adapter;
+	public TitlePageIndicator indicator;
 	BluetoothManagerApplication bluetooth_manager;
 
 	public UIPacketReceiver(BluetoothManagerApplication bluetooth_manager) {
@@ -41,7 +44,6 @@ public class UIPacketReceiver extends BroadcastReceiver {
 
 		conversation_map = new HashMap<String, ArrayAdapter<String>>();
 
-		// Related to ChatUIs
 		adapter = new ViewPagerAdapter(
 				this.bluetooth_manager.getApplicationContext(),
 				conversation_map);
@@ -55,9 +57,11 @@ public class UIPacketReceiver extends BroadcastReceiver {
 		String msg = intent.getStringExtra("msg");
 
 		Log.d(TAG, "Received msg:" + msg + " from:" + device);
-		
+
+		// Find the type of packet received. i.e. chat or msg
 		String dataType = msg.substring(0, msg.indexOf(","));
 
+		// Process the packet according to the type.
 		if (dataType.equals(MSG_TYPE)) {
 			processMsgData(device, name, msg.substring(msg.indexOf(",") + 1));
 			return;
@@ -69,7 +73,12 @@ public class UIPacketReceiver extends BroadcastReceiver {
 
 	}
 
+	/* Checks if it a new chat or continuation of the old chat.
+	 * if old then just add the string to the chatAdapter, else
+	 * add a new device to the ViewPagerAdapter.
+	 */
 	private void processChatData(String device, String name, String msg) {
+		
 		if (conversation_map.containsKey(device)) {
 			Log.d(TAG, "Device found: " + device);
 			ArrayAdapter<String> chatAdapter = conversation_map.get(device);
@@ -80,20 +89,24 @@ public class UIPacketReceiver extends BroadcastReceiver {
 			adapter.addDevice(device, name, msg);
 			adapter.notifyDataSetChanged();
 		}
+		
 	}
-
+	/* After receiving the MSG packet, it is added to in box and a 
+	 * notification is shown to the user.
+	 */
 	private void processMsgData(String device, String name, String msg) {
-		addMsgToInbox(name,msg);
+		addMsgToInbox(name, msg);
 		setNotificationForMsg("New message from: " + name, name, msg);
 	}
 
 	private void addMsgToInbox(String name, String msg) {
-		Log.d(TAG,"Adding SMS to inbox.");
-    	ContentValues values = new ContentValues();
-        values.put("address", name);
-        values.put("body", msg);
-        bluetooth_manager.getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
-        Log.d(TAG,"SMS Added to inbox.");
+		Log.d(TAG, "Adding SMS to inbox.");
+		ContentValues values = new ContentValues();
+		values.put("address", name);
+		values.put("body", msg);
+		bluetooth_manager.getContentResolver().insert(
+				Uri.parse("content://sms/inbox"), values);
+		Log.d(TAG, "SMS Added to inbox.");
 	}
 
 	private void setNotificationForMsg(String ticker, String title, String text) {

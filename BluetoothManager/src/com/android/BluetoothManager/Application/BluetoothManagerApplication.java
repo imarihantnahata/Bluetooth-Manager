@@ -5,6 +5,7 @@ import java.util.HashMap;
 import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -40,6 +41,8 @@ public class BluetoothManagerApplication extends Application {
 
 	public Connection connection;
 
+	public Handler ui_handler;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -121,6 +124,11 @@ public class BluetoothManagerApplication extends Application {
 	}
 
 	public HashMap<String, String> getConnectableDevices() {
+//		HashMap<String,String> h = new HashMap<String, String>();
+//		h.put("12.12.12.12.12.12","ABC");
+//		h.put("34.34.34.34.34.34","PQR");
+//		h.put("56.56.56.56.56.56","XYZ");
+//		return h;
 		return connection.getPairedDevices();
 	}
 
@@ -129,22 +137,22 @@ public class BluetoothManagerApplication extends Application {
 
 		@Override
 		public void run() {
-			pause(5);
-			mSendIntent("123", "aru", "chat,hello :D");
-			pause(5);
-			mSendIntent("123", "aru", "chat,hello hi :D");
-			pause(5);
-			mSendIntent("321", "arihant", "chat,HAHAHAHA");
-			pause(5);
-			mSendIntent("123", "aru", "chat,hello sdfsdf");
-			pause(5);
-			mSendIntent("789", "pik", "chat,Arihant");
-			pause(5);
-			mSendIntent("789", "pik", "chat,Arihant123");
-			pause(5);
-			mSendIntent("123", "aru", "chat,hello hi :D");
-			pause(10000);
-			mSendIntent("888", "God", "chat,This is God !");
+//			pause(5);
+//			mSendIntent("123", "aru", "chat,hello :D");
+//			pause(5);
+//			mSendIntent("123", "aru", "chat,hello hi :D");
+//			pause(5);
+//			mSendIntent("321", "arihant", "chat,HAHAHAHA");
+//			pause(5);
+//			mSendIntent("123", "aru", "chat,hello sdfsdf");
+//			pause(5);
+//			mSendIntent("789", "pik", "chat,Arihant");
+//			pause(5);
+//			mSendIntent("789", "pik", "chat,Arihant123");
+//			pause(5);
+//			mSendIntent("123", "aru", "chat,hello hi :D");
+//			pause(10000);
+//			mSendIntent("888", "God", "chat,This is God !");
 		}
 
 		public void pause(int seconds) {
@@ -155,26 +163,26 @@ public class BluetoothManagerApplication extends Application {
 			}
 		}
 
-		public void mSendIntent(String device, String name, String msg) {
-			Intent i = new Intent();
-			i.setAction(getResources().getString(R.string.ROUTING_TO_UI));
-			i.putExtra("device", device);
-			i.putExtra("name", name);
-			i.putExtra("msg", msg);
-			Log.d(TAG, "Generating Intent: device-" + device + " name-" + name
-					+ " msg-" + msg);
-			sendBroadcast(i);
-		}
+//		public void mSendIntent(String device, String name, String msg) {
+//			Intent i = new Intent();
+//			i.setAction(getResources().getString(R.string.ROUTING_TO_UI));
+//			i.putExtra("device", device);
+//			i.putExtra("name", name);
+//			i.putExtra("msg", msg);
+//			Log.d(TAG, "Generating Intent: device-" + device + " name-" + name
+//					+ " msg-" + msg);
+//			sendBroadcast(i);
+//		}
 
 	}
 
-	public void sendDataToRoutingFromUI(String device, String msg) {
+	public void sendDataToRoutingFromUI(String device, String msg, String type) {
 
 		Intent intent = new Intent();
 		intent.setAction(getResources().getString(R.string.UI_TO_ROUTING));
 		intent.putExtra("device", device);
-		intent.putExtra("msg", "msg,Hello RREQ");
-		Log.d(TAG, "Sending msg from UI to Routing:" + msg);
+		intent.putExtra("msg", type+","+msg);
+		Log.d(TAG, "Sending msg to Routing from UI :" + msg);
 		sendBroadcast(intent);
 
 	}
