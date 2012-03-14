@@ -84,6 +84,8 @@ public class Connection {
 	BluetoothManagerApplication bluetooth_manager;
 
 	gc_thread maintainence_thread;
+	
+	boolean isSearching = false;
 
 	private long lastDiscovery = 0; // Stores the time of the last discovery
 
@@ -96,14 +98,14 @@ public class Connection {
 		Uuids = new ArrayList<UUID>();
 
 		// Allow up to 6 devices to connect to the server
-		Uuids.add(UUID.fromString("a60f35f0-b93a-11de-8a39-08002009c666"));
 		Uuids.add(UUID.fromString("503c7430-bc23-11de-8a39-0800200c9a66"));
 		Uuids.add(UUID.fromString("503c7431-bc23-11de-8a39-0800200c9a66"));
 		Uuids.add(UUID.fromString("503c7432-bc23-11de-8a39-0800200c9a66"));
 		Uuids.add(UUID.fromString("503c7433-bc23-11de-8a39-0800200c9a66"));
 		Uuids.add(UUID.fromString("503c7434-bc23-11de-8a39-0800200c9a66"));
-		// Uuids.add(UUID.fromString("503c7435-bc23-11de-8a39-0800200c9a66"));
-
+		Uuids.add(UUID.fromString("503c7435-bc23-11de-8a39-0800200c9a66"));
+		//Uuids.add(UUID.fromString("a60f35f0-b93a-11de-8a39-08002009c666"));
+		
 		friend_uuid = UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
 
 		// Registration for Bluetooth Events.
@@ -133,10 +135,11 @@ public class Connection {
 			}
 			Log.d(TAG, "Starting Discovery !!");
 			if ((System.currentTimeMillis() / 1000) - lastDiscovery > 60) {
+				BtFoundDevices.clear();
+				isSearching = true;
 				BtAdapter.startDiscovery();
 				try {
 					Thread.sleep(15000);
-					lastDiscovery = System.currentTimeMillis() / 1000;
 
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -302,9 +305,13 @@ public class Connection {
 	 * They have to be discoverable and within range
 	 */
 	public void connectToFoundDevices() {
-		Log.d(TAG, "connectToFoundDevices() called 1");
+		
 		if (server_isRunning) {
+			
 			Log.d(TAG, "connectToFoundDevices() called");
+			while(isSearching); // Wait if the adapter is already searching.
+			Log.d(TAG,"Current Time:"+System.currentTimeMillis()/1000);
+			Log.d(TAG,"Last Search:"+lastDiscovery);
 			Iterator<Map.Entry<String, String>> devices = BtFoundDevices
 					.entrySet().iterator();
 			Log.d(TAG,
@@ -424,6 +431,7 @@ public class Connection {
 			if (server_thread == null) {
 				server_thread = new Thread(new ConnectionWaiter());
 				server_thread.start();
+				server_isRunning = true;
 				Log.d(TAG,"Created Server");
 			}
 			else
@@ -434,7 +442,7 @@ public class Connection {
 			//friendServer= new Thread(new FriendServer());
 			//friendServer.start();
 			Log.d(TAG, " ++ Server Started ++");
-			server_isRunning = true;
+			
 			return Connection.SUCCESS;
 		}
 		return Connection.FAILURE;
@@ -547,7 +555,10 @@ public class Connection {
 
 			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
 					.equals(action)) {
-				// Do something when the search finishes.
+
+				isSearching = false;
+				lastDiscovery = System.currentTimeMillis() / 1000;
+
 				Log.d(TAG, "Service Discovery Finished !");
 			} else if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
 				Log.d(TAG, "Bluetooth State Changed");

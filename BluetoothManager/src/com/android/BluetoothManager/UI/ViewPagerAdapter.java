@@ -2,6 +2,7 @@ package com.android.BluetoothManager.UI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import android.content.Context;
 import android.os.Parcelable;
@@ -21,7 +22,7 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 	private final String TAG = "ViewPagerAdapter";
 
 	public ArrayList<String> deviceAddresses;
-	private ArrayList<String> deviceNames;
+	public ArrayList<String> deviceNames;
 	private ArrayList<ListView> listViews;
 	
 	HashMap<String, ArrayAdapter<String>> conversation_map;
@@ -119,4 +120,13 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 		Log.d(TAG, " +++ startUpdate Called");
 	}
 
+	public void printContents(ArrayList list)
+	{
+		Log.d(TAG,"Printing content of size :"+ list.size());
+		Iterator<String> itr=list.iterator();
+		while(itr.hasNext())
+		{
+			Log.d(TAG,itr.next());
+		}
+	}
 }

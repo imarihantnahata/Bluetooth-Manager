@@ -54,7 +54,9 @@ public class UIPacketReceiver extends BroadcastReceiver {
 
 		String device = intent.getStringExtra("device");
 		String msg = intent.getStringExtra("msg");
-		String name = adapter.getTitle(adapter.deviceAddresses.indexOf(device));
+		String name = "Null";//adapter.deviceNames.get((adapter.deviceAddresses.indexOf(device)));
+		adapter.printContents(adapter.deviceNames);
+		adapter.printContents(adapter.deviceAddresses);
 		Log.d(TAG, "Received msg:" + msg + " from:" + device);
 
 		// Find the type of packet received. i.e. chat or msg
