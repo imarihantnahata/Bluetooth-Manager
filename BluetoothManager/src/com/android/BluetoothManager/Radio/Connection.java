@@ -137,7 +137,8 @@ public class Connection {
 				isSearching = true;
 				BtAdapter.startDiscovery();
 				try {
-					Thread.sleep(17000);
+					//Just in case
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -310,14 +311,15 @@ public class Connection {
 			Log.d(TAG, "connectToFoundDevices() called");
 			Log.d(TAG, "Current Time:" + System.currentTimeMillis() / 1000);
 
-			// while(isSearching){ // Wait if the adapter is already searching.
-			// Log.d(TAG,"Waiting for search to complete");
-			// try {
-			// Thread.sleep(1000);
-			// } catch (InterruptedException e) {
-			// Log.d(TAG,"Exception in wait sleep"+e.getMessage());
-			// }
-			// }
+			 while(isSearching)
+			 { // Wait if the adapter is already searching.
+				 Log.d(TAG,"Waiting for search to complete");
+				 try {
+				 Thread.sleep(2000);
+				 } catch (InterruptedException e) {
+				 Log.d(TAG,"Exception in wait sleep"+e.getMessage());
+				 }
+			 }
 			Log.d(TAG, "Last Search:" + lastDiscovery);
 			Iterator<Map.Entry<String, String>> devices = BtFoundDevices
 					.entrySet().iterator();
