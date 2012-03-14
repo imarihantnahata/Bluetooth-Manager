@@ -139,8 +139,7 @@ public class Connection {
 				isSearching = true;
 				BtAdapter.startDiscovery();
 				try {
-					Thread.sleep(15000);
-
+					Thread.sleep(17000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -309,8 +308,16 @@ public class Connection {
 		if (server_isRunning) {
 			
 			Log.d(TAG, "connectToFoundDevices() called");
-			while(isSearching); // Wait if the adapter is already searching.
 			Log.d(TAG,"Current Time:"+System.currentTimeMillis()/1000);
+
+//			while(isSearching){ // Wait if the adapter is already searching.
+//				Log.d(TAG,"Waiting for search to complete");
+//				try {
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					Log.d(TAG,"Exception in wait sleep"+e.getMessage());
+//				}
+//			}
 			Log.d(TAG,"Last Search:"+lastDiscovery);
 			Iterator<Map.Entry<String, String>> devices = BtFoundDevices
 					.entrySet().iterator();
@@ -651,17 +658,19 @@ public class Connection {
 									+ new String(buffer, 0, bytesRead);
 							bytesRead = instream.read(buffer);
 						}
-						message = message
-								+ new String(buffer, 0, bytesRead - 1);
-
-						bluetooth_manager.ui_handler.obtainMessage(1,
-								"Received: " + message + " from: " + address)
-								.sendToTarget();
-						Log.d(TAG, "Received " + message + " from " + address
-								+ "In Connection");
-						lastReceived = System.currentTimeMillis() / 1000;
-						communicateFromRadioToRouting(address, message);
-
+						Log.d(TAG,"Value of bytesRead = "+bytesRead+"");
+						if (bytesRead != -1) {
+							message = message
+									+ new String(buffer, 0, bytesRead - 1);
+							bluetooth_manager.ui_handler.obtainMessage(
+									1,
+									"Received: " + message + " from: "
+											+ address).sendToTarget();
+							Log.d(TAG, "Received " + message + " from "
+									+ address + "In Connection");
+							lastReceived = System.currentTimeMillis() / 1000;
+							communicateFromRadioToRouting(address, message);
+						}
 					}
 				}
 			} 
@@ -717,15 +726,16 @@ public class Connection {
 					 .next();
 					 time = ((BtStreamWatcher) pairs.getValue())
 					 .getLastReceived();
-					 if (System.currentTimeMillis() / 1000 - time > 60) {
+					 if (System.currentTimeMillis() / 1000 - time > 150) {
 						 String address = (String) pairs.getKey();
 						 BtStreamWatcher listener = (BtStreamWatcher) pairs.getValue();
-						 it.remove();
-						 listener=null;
 						 BluetoothSocket myBtSocket = BtSockets.get(address);
 						 myBtSocket.getInputStream().close();
 						 myBtSocket.getOutputStream().close();
 						 myBtSocket.close();
+						 it.remove();
+						 listener.interrupt();
+						 listener=null;
 						 BtSockets.remove(address);
 						 BtConnectedDeviceAddresses.remove(address);
 						 Log.d(TAG, "Disconnected " + address);
