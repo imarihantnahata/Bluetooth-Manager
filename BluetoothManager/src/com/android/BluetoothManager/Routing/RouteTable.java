@@ -208,6 +208,21 @@ public class RouteTable {
 		return null;
 	}
 
+	//Removes route to a destination
+	public void removeRouteToDest(String dest)
+	{
+		Route temp;
+		Iterator<Route> itr = table.iterator();
+		while (itr.hasNext()) {
+			temp = itr.next();
+			if (temp.getDest_addr().equals(dest)) {
+				table.remove(temp);
+				break;
+			}
+		}
+		return;
+	}
+	
 	//Function returning non repeated set neighbors who are a part of a route
 	LinkedHashSet<String> getAllNextHops()
 	{

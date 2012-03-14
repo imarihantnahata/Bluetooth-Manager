@@ -53,12 +53,12 @@ public class BluetoothManagerApplication extends Application {
 		 */
 		Log.d(TAG, "Instantiating the Radio layer and starting ");
 		connection = new Connection(this);
-		connection.startRadio();
+		
 
 		/* Start the friend server which is used to determine if node runs our
 		 * application or not
 		 */
-		connection.startFriendServer();
+		//connection.startFriendServer();
 
 		// Getting the intent strings from the XML file.
 		Log.d(TAG, "Application OnCreate");
@@ -97,14 +97,17 @@ public class BluetoothManagerApplication extends Application {
 		route_table = new RouteTable(this);
 
 		// The routing thread is started which processes the UI an Radio Queues.
-		Log.d(TAG, "Starting Routing thread ");
+		Log.d(TAG, "Creating Routing thread ");
 		routing_thread = new PacketHandlerService();
-		new Thread(routing_thread).start();
+
 		Log.d(TAG, "Routing Thread Started !");
 
 		// Testing UI via Stubs
 		Thread ui_stub = new Thread(new UIStub());
 		ui_stub.start();
+		
+		//Start the radio layer, which will also start routing thread
+		connection.startRadio();
 
 	}
 
@@ -112,6 +115,9 @@ public class BluetoothManagerApplication extends Application {
 	public void onTerminate() {
 		super.onTerminate();
 
+		connection.stopRadio();
+		connection=null;
+		route_table=null;		
 	}
 
 	public String getSelfAddress() {

@@ -56,7 +56,13 @@ public class PacketHandlerService extends Thread {
 
 				Thread.sleep(2000);
 			}
-		} catch (Exception e) {
+		} 
+		catch(InterruptedException e)
+		{
+			Log.d(TAG,"Interrupted, exiting from loop");
+			return;
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
