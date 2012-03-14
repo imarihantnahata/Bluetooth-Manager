@@ -56,7 +56,7 @@ public class Connection {
 						// phone or not.
 
 	Thread friendServer;
-	
+
 	ArrayList<String> BtConnectedDeviceAddresses; // List of addresses
 													// to which
 	// the devices are currently
@@ -84,14 +84,12 @@ public class Connection {
 	BluetoothManagerApplication bluetooth_manager;
 
 	gc_thread maintainence_thread;
-	
+
 	boolean isSearching = false;
 
 	private long lastDiscovery = 0; // Stores the time of the last discovery
 
 	public Connection(BluetoothManagerApplication bluetooth_manager) {
-
-		
 
 		this.bluetooth_manager = bluetooth_manager;
 
@@ -104,8 +102,8 @@ public class Connection {
 		Uuids.add(UUID.fromString("503c7433-bc23-11de-8a39-0800200c9a66"));
 		Uuids.add(UUID.fromString("503c7434-bc23-11de-8a39-0800200c9a66"));
 		Uuids.add(UUID.fromString("503c7435-bc23-11de-8a39-0800200c9a66"));
-		//Uuids.add(UUID.fromString("a60f35f0-b93a-11de-8a39-08002009c666"));
-		
+		// Uuids.add(UUID.fromString("a60f35f0-b93a-11de-8a39-08002009c666"));
+
 		friend_uuid = UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
 
 		// Registration for Bluetooth Events.
@@ -117,9 +115,9 @@ public class Connection {
 
 		maintainence_thread = new gc_thread();
 		maintainence_thread.start();
-		
-		//friendServer=new Thread(new FriendServer());
-		
+
+		// friendServer=new Thread(new FriendServer());
+
 		Log.d(TAG, "Connection Object Constructed");
 	}
 
@@ -144,7 +142,8 @@ public class Connection {
 					e.printStackTrace();
 				}
 			} else {
-				Log.d(TAG,"Cancelling discovery because it was done too recently !! ");
+				Log.d(TAG,
+						"Cancelling discovery because it was done too recently !! ");
 			}
 
 		}
@@ -215,7 +214,8 @@ public class Connection {
 			return myBSock;
 		} catch (IOException e) {
 			Log.i(TAG,
-					"IOException in getConnectedSocket. Msg:" + e.getMessage()+e.getStackTrace());
+					"IOException in getConnectedSocket. Msg:" + e.getMessage()
+							+ e.getStackTrace());
 		}
 		return null;
 	}
@@ -304,21 +304,21 @@ public class Connection {
 	 * They have to be discoverable and within range
 	 */
 	public void connectToFoundDevices() {
-		
-		if (server_isRunning) {
-			
-			Log.d(TAG, "connectToFoundDevices() called");
-			Log.d(TAG,"Current Time:"+System.currentTimeMillis()/1000);
 
-//			while(isSearching){ // Wait if the adapter is already searching.
-//				Log.d(TAG,"Waiting for search to complete");
-//				try {
-//					Thread.sleep(1000);
-//				} catch (InterruptedException e) {
-//					Log.d(TAG,"Exception in wait sleep"+e.getMessage());
-//				}
-//			}
-			Log.d(TAG,"Last Search:"+lastDiscovery);
+		if (server_isRunning) {
+
+			Log.d(TAG, "connectToFoundDevices() called");
+			Log.d(TAG, "Current Time:" + System.currentTimeMillis() / 1000);
+
+			// while(isSearching){ // Wait if the adapter is already searching.
+			// Log.d(TAG,"Waiting for search to complete");
+			// try {
+			// Thread.sleep(1000);
+			// } catch (InterruptedException e) {
+			// Log.d(TAG,"Exception in wait sleep"+e.getMessage());
+			// }
+			// }
+			Log.d(TAG, "Last Search:" + lastDiscovery);
 			Iterator<Map.Entry<String, String>> devices = BtFoundDevices
 					.entrySet().iterator();
 			Log.d(TAG,
@@ -358,54 +358,55 @@ public class Connection {
 
 		return true;
 
-//		boolean is_my_friend = false;
-//
-//		Log.d(TAG, "Checking if " + address + " is my friend");
-//
-//		BluetoothDevice myBtServer = BtAdapter.getRemoteDevice(address);
-//
-//		BluetoothSocket myBSock = null;
-//
-//		/*
-//		 * Try this for three times since there might be other nodes which are
-//		 * trying to connect to the same device.
-//		 */
-//		for (int i = 0; i < 3; i++) {
-//
-//			Log.d(TAG, " Trying to create Socket to see if " + address
-//					+ "is my friend");
-//			myBSock = getConnectedSocket(myBtServer, friend_uuid);
-//			Log.d(TAG, "After getConnectedSocket(): in friend " + myBSock);
-//			if (myBSock == null) {
-//				try {
-//					Thread.sleep(25);
-//				} catch (InterruptedException e) {
-//					Log.e(TAG, "InterruptedException in connect", e);
-//				}
-//			} else {
-//				is_my_friend = true;
-//				try {
-//					myBSock.close();
-//				} catch (IOException e) {
-//					Log.d(TAG,
-//							"Error while closing friend socket. "
-//									+ e.getMessage());
-//				}
-//				break;
-//			}
-//		}
-//		Log.d(TAG, "Returning " + is_my_friend + "from isMyFriend()");
-//		return is_my_friend;
+		// boolean is_my_friend = false;
+		//
+		// Log.d(TAG, "Checking if " + address + " is my friend");
+		//
+		// BluetoothDevice myBtServer = BtAdapter.getRemoteDevice(address);
+		//
+		// BluetoothSocket myBSock = null;
+		//
+		// /*
+		// * Try this for three times since there might be other nodes which are
+		// * trying to connect to the same device.
+		// */
+		// for (int i = 0; i < 3; i++) {
+		//
+		// Log.d(TAG, " Trying to create Socket to see if " + address
+		// + "is my friend");
+		// myBSock = getConnectedSocket(myBtServer, friend_uuid);
+		// Log.d(TAG, "After getConnectedSocket(): in friend " + myBSock);
+		// if (myBSock == null) {
+		// try {
+		// Thread.sleep(25);
+		// } catch (InterruptedException e) {
+		// Log.e(TAG, "InterruptedException in connect", e);
+		// }
+		// } else {
+		// is_my_friend = true;
+		// try {
+		// myBSock.close();
+		// } catch (IOException e) {
+		// Log.d(TAG,
+		// "Error while closing friend socket. "
+		// + e.getMessage());
+		// }
+		// break;
+		// }
+		// }
+		// Log.d(TAG, "Returning " + is_my_friend + "from isMyFriend()");
+		// return is_my_friend;
 	}
 
-//	/*
-//	 * Start the server which listens for connection which is used to determine
-//	 * if the other node has our application running or not.
-//	 */
-//	public void startFriendServer() {
-//		friendServer=new Thread(new FriendServer());
-//		friendServer.start();
-//	}
+	// /*
+	// * Start the server which listens for connection which is used to
+	// determine
+	// * if the other node has our application running or not.
+	// */
+	// public void startFriendServer() {
+	// friendServer=new Thread(new FriendServer());
+	// friendServer.start();
+	// }
 
 	/*
 	 * Function to be called when Application starts and later when Bluetooth is
@@ -434,29 +435,29 @@ public class Connection {
 			return Connection.FAILURE;
 		}
 		if (BtAdapter.isEnabled()) {
-			
+
 			if (server_thread == null) {
 				server_thread = new Thread(new ConnectionWaiter());
 				server_thread.start();
 				server_isRunning = true;
-				Log.d(TAG,"Created Server");
-			}
-			else
-				Log.d(TAG,"Server already Created");
-			
-			bluetooth_manager.routing_thread=new PacketHandlerService();
+				Log.d(TAG, "Created Server");
+			} else
+				Log.d(TAG, "Server already Created");
+
+			bluetooth_manager.routing_thread = new PacketHandlerService();
 			bluetooth_manager.routing_thread.start();
-			//friendServer= new Thread(new FriendServer());
-			//friendServer.start();
+			// friendServer= new Thread(new FriendServer());
+			// friendServer.start();
 			Log.d(TAG, " ++ Server Started ++");
-			
+
 			return Connection.SUCCESS;
 		}
 		return Connection.FAILURE;
 
 	}
 
-	/* Function called when Bluetooth will be turned off. Stops the thread which
+	/*
+	 * Function called when Bluetooth will be turned off. Stops the thread which
 	 * listens for other connections. Removes sockets and other lists for GC and
 	 * make the Routing thread wait till it is started again
 	 */
@@ -473,15 +474,15 @@ public class Connection {
 				BtStreamWatcherThreads = null;
 				BtConnectedDeviceAddresses = null;
 				BtFoundDevices = null;
-				server_thread=null;
+				server_thread = null;
 				server_isRunning = false;
 				bluetooth_manager.route_table = null;
 				friendServer.interrupt();
-				friendServer= null;
+				friendServer = null;
 				bluetooth_manager.routing_thread.interrupt();
-				bluetooth_manager.routing_thread=null;
+				bluetooth_manager.routing_thread = null;
 				Log.d(TAG, " ++ Server Stopped ++");
-				
+
 			} catch (IOException e) {
 				Log.d(TAG, "Error in stopRadio(). " + e.getMessage());
 			}
@@ -598,7 +599,7 @@ public class Connection {
 					BluetoothServerSocket myServerSocket = BtAdapter
 							.listenUsingRfcommWithServiceRecord(service_name,
 									Uuids.get(i));
-					Log.d(TAG,"Listening for UUID : "+Uuids.get(i));
+					Log.d(TAG, "Listening for UUID : " + Uuids.get(i));
 					BluetoothSocket myBSock = myServerSocket.accept();
 					myServerSocket.close(); // Close the socket now that the
 											// connection has been made.
@@ -617,8 +618,7 @@ public class Connection {
 					}
 				}
 
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				Log.i(TAG, "IOException in ConnectionService:ConnectionWaiter",
 						e);
 			}
@@ -658,22 +658,18 @@ public class Connection {
 									+ new String(buffer, 0, bytesRead);
 							bytesRead = instream.read(buffer);
 						}
-						Log.d(TAG,"Value of bytesRead = "+bytesRead+"");
-						if (bytesRead != -1) {
-							message = message
-									+ new String(buffer, 0, bytesRead - 1);
-							bluetooth_manager.ui_handler.obtainMessage(
-									1,
-									"Received: " + message + " from: "
-											+ address).sendToTarget();
-							Log.d(TAG, "Received " + message + " from "
-									+ address + "In Connection");
-							lastReceived = System.currentTimeMillis() / 1000;
-							communicateFromRadioToRouting(address, message);
-						}
+						message = message
+								+ new String(buffer, 0, bytesRead - 1);
+						bluetooth_manager.ui_handler.obtainMessage(1,
+								"Received: " + message + " from: " + address)
+								.sendToTarget();
+						Log.d(TAG, "Received " + message + " from " + address
+								+ "In Connection");
+						lastReceived = System.currentTimeMillis() / 1000;
+						communicateFromRadioToRouting(address, message);
 					}
 				}
-			} 
+			}
 
 			catch (IOException e) {
 				Log.i(TAG,
@@ -715,39 +711,41 @@ public class Connection {
 
 						bluetooth_manager.connection.makeDeviceDisocverable();
 					}
-					
-					 Log.d(TAG, "Connections are :" + getConnections());
-					 it = BtStreamWatcherThreads.entrySet().iterator();
-					 Log.d(TAG, "Doing Maintainence");
-					 try {
-					 while (it.hasNext()) {
-					 Map.Entry<String, BtStreamWatcher> pairs =
-					 (Map.Entry<String, BtStreamWatcher>) it
-					 .next();
-					 time = ((BtStreamWatcher) pairs.getValue())
-					 .getLastReceived();
-					 if (System.currentTimeMillis() / 1000 - time > 150) {
-						 String address = (String) pairs.getKey();
-						 BtStreamWatcher listener = (BtStreamWatcher) pairs.getValue();
-						 BluetoothSocket myBtSocket = BtSockets.get(address);
-						 myBtSocket.getInputStream().close();
-						 myBtSocket.getOutputStream().close();
-						 myBtSocket.close();
-						 it.remove();
-						 listener.interrupt();
-						 listener=null;
-						 BtSockets.remove(address);
-						 BtConnectedDeviceAddresses.remove(address);
-						 Log.d(TAG, "Disconnected " + address);
-						 bluetooth_manager.route_table.removeRouteToDest(address);
-					 }
-					 }
-					 Thread.sleep(30000);
-					 } catch (IOException e) {
-					 Log.d(TAG, "Failed to close socket" + e.getMessage());
-					 } catch (InterruptedException e) {
-					 Log.d(TAG, "Garbage Collection Thread Interrupted!!");
-					 }
+
+					Log.d(TAG, "Connections are :" + getConnections());
+					it = BtStreamWatcherThreads.entrySet().iterator();
+					Log.d(TAG, "Doing Maintainence");
+					try {
+						while (it.hasNext()) {
+							Map.Entry<String, BtStreamWatcher> pairs = (Map.Entry<String, BtStreamWatcher>) it
+									.next();
+							time = ((BtStreamWatcher) pairs.getValue())
+									.getLastReceived();
+							if (System.currentTimeMillis() / 1000 - time > 150) {
+								String address = (String) pairs.getKey();
+								BtStreamWatcher listener = (BtStreamWatcher) pairs
+										.getValue();
+								BluetoothSocket myBtSocket = BtSockets
+										.get(address);
+								myBtSocket.getInputStream().close();
+								myBtSocket.getOutputStream().close();
+								myBtSocket.close();
+								it.remove();
+								listener.interrupt();
+								listener = null;
+								BtSockets.remove(address);
+								BtConnectedDeviceAddresses.remove(address);
+								Log.d(TAG, "Disconnected " + address);
+								bluetooth_manager.route_table
+										.removeRouteToDest(address);
+							}
+						}
+						Thread.sleep(30000);
+					} catch (IOException e) {
+						Log.d(TAG, "Failed to close socket" + e.getMessage());
+					} catch (InterruptedException e) {
+						Log.d(TAG, "Garbage Collection Thread Interrupted!!");
+					}
 				}
 			}
 		}
