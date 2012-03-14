@@ -41,7 +41,7 @@ public class Connection {
 
 	private BluetoothAdapter BtAdapter;
 
-	private Thread server_thread;
+	private Thread server_thread = null;
 
 	private String service_name = "BluetoothManagerService"; // Random String
 	// used for
@@ -89,7 +89,7 @@ public class Connection {
 
 	public Connection(BluetoothManagerApplication bluetooth_manager) {
 
-		Log.d(TAG, "Started at");
+		
 
 		this.bluetooth_manager = bluetooth_manager;
 
@@ -116,8 +116,9 @@ public class Connection {
 		maintainence_thread = new gc_thread();
 		maintainence_thread.start();
 		
-		friendServer=new Thread(new FriendServer());
+		//friendServer=new Thread(new FriendServer());
 		
+		Log.d(TAG, "Connection Object Constructed");
 	}
 
 	/*
@@ -166,7 +167,7 @@ public class Connection {
 
 			BluetoothSocket myBSock = null;
 
-			Log.d(TAG, "Creating Sockets");
+			Log.d(TAG, "Creating Socket");
 
 			for (int i = 0; i < Connection.MAX_CONNECTIONS_SUPPORTED
 					&& myBSock == null; i++) {
@@ -212,7 +213,7 @@ public class Connection {
 			return myBSock;
 		} catch (IOException e) {
 			Log.i(TAG,
-					"IOException in getConnectedSocket. Msg:" + e.getMessage());
+					"IOException in getConnectedSocket. Msg:" + e.getMessage()+e.getStackTrace());
 		}
 		return null;
 	}
@@ -426,8 +427,8 @@ public class Connection {
 			
 			bluetooth_manager.routing_thread=new PacketHandlerService();
 			bluetooth_manager.routing_thread.start();
-			friendServer= new Thread(new FriendServer());
-			friendServer.start();
+			//friendServer= new Thread(new FriendServer());
+			//friendServer.start();
 			Log.d(TAG, " ++ Server Started ++");
 			server_isRunning = true;
 			return Connection.SUCCESS;
@@ -575,6 +576,7 @@ public class Connection {
 					BluetoothServerSocket myServerSocket = BtAdapter
 							.listenUsingRfcommWithServiceRecord(service_name,
 									Uuids.get(i));
+					Log.d(TAG,"Listening for UUID : "+Uuids.get(i));
 					BluetoothSocket myBSock = myServerSocket.accept();
 					myServerSocket.close(); // Close the socket now that the
 											// connection has been made.
@@ -689,11 +691,7 @@ public class Connection {
 
 						bluetooth_manager.connection.makeDeviceDisocverable();
 					}
-					try {
-						Thread.sleep(30000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					
 					 Log.d(TAG, "Connections are :" + getConnections());
 					 it = BtStreamWatcherThreads.entrySet().iterator();
 					 Log.d(TAG, "Doing Maintainence");
