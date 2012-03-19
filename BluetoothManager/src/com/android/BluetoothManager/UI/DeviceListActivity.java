@@ -37,6 +37,7 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 		bluetooth_manager = (BluetoothManagerApplication) getApplication();
 		Log.d(TAG,"Calling startDiscovery from DeviceListActivity");
 		bluetooth_manager.connection.startDiscovery();
+		bluetooth_manager.connection.is_req_from_gui = true;
 		btPaired = bluetooth_manager.connection.getPairedDevices();
 		
 		//btPaired = bluetooth_manager.getConnectableDevices();

@@ -6,7 +6,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,6 +38,8 @@ public class Connection {
 	public static final int SUCCESS = 0;
 
 	public static final int FAILURE = 1;
+
+	public boolean is_req_from_gui = false;
 
 	private boolean server_isRunning = false;
 
@@ -80,6 +84,8 @@ public class Connection {
 												// Bonded devices
 
 	HashMap<String, BtStreamWatcher> BtStreamWatcherThreads;
+
+	Queue<String> broadcast_msg_queue;
 
 	BluetoothManagerApplication bluetooth_manager;
 
@@ -136,15 +142,16 @@ public class Connection {
 				BtFoundDevices.clear();
 				isSearching = true;
 				BtAdapter.startDiscovery();
-				try {
-					//Just in case
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				// try {
+				// //Just in case
+				// Thread.sleep(5000);
+				// } catch (InterruptedException e) {
+				// e.printStackTrace();
+				// }
 			} else {
 				Log.d(TAG,
 						"Cancelling discovery because it was done too recently !! ");
+				dispatchBroadcastQueue();
 			}
 
 		}
@@ -225,15 +232,22 @@ public class Connection {
 	 * Function that will broadcast RREQ's. Will first search for all found
 	 * devices. Will then connect to all found devices and send an RREQ to them.
 	 */
-	public int broadcastMessage(String message) throws RemoteException {
-
+	public void broadcastMessage(String message) throws RemoteException {
+		broadcast_msg_queue.add(message);
 		startDiscovery();
-		connectToFoundDevices();
+	}
+
+	public int sendMessageToConnectedDevices(String message) {
 		int size = BtConnectedDeviceAddresses.size();
 		for (int i = 0; i < size; i++) {
 			Log.d(TAG, "Sending msg: " + message + " to:"
 					+ BtConnectedDeviceAddresses.get(i));
-			sendMessageToDestination(BtConnectedDeviceAddresses.get(i), message);
+			try {
+				sendMessageToDestination(BtConnectedDeviceAddresses.get(i),
+						message);
+			} catch (RemoteException e) {
+				Log.d(TAG, "Error in sendMsgToDestination:" + e.getMessage());
+			}
 		}
 		return Connection.SUCCESS;
 	}
@@ -311,15 +325,15 @@ public class Connection {
 			Log.d(TAG, "connectToFoundDevices() called");
 			Log.d(TAG, "Current Time:" + System.currentTimeMillis() / 1000);
 
-			 while(isSearching)
-			 { // Wait if the adapter is already searching.
-				 Log.d(TAG,"Waiting for search to complete");
-				 try {
-				 Thread.sleep(2000);
-				 } catch (InterruptedException e) {
-				 Log.d(TAG,"Exception in wait sleep"+e.getMessage());
-				 }
-			 }
+			// while(isSearching)
+			// { // Wait if the adapter is already searching.
+			// Log.d(TAG,"Waiting for search to complete");
+			// try {
+			// Thread.sleep(2000);
+			// } catch (InterruptedException e) {
+			// Log.d(TAG,"Exception in wait sleep"+e.getMessage());
+			// }
+			// }
 			Log.d(TAG, "Last Search:" + lastDiscovery);
 			Iterator<Map.Entry<String, String>> devices = BtFoundDevices
 					.entrySet().iterator();
@@ -427,6 +441,8 @@ public class Connection {
 
 		BtStreamWatcherThreads = new HashMap<String, BtStreamWatcher>();
 
+		broadcast_msg_queue = new LinkedList<String>();
+
 		bluetooth_manager.route_table = new RouteTable(bluetooth_manager);
 		BtAdapter = BluetoothAdapter.getDefaultAdapter();
 		if (BtAdapter != null) {
@@ -493,6 +509,22 @@ public class Connection {
 			return Connection.FAILURE;
 		}
 
+	}
+	
+	public void dispatchBroadcastQueue(){
+		Log.d(TAG,"Value of flag:"+is_req_from_gui);
+		
+		if (!is_req_from_gui) {
+			connectToFoundDevices();
+			Iterator<String> broadcast_msg_itr = broadcast_msg_queue
+					.iterator();
+			while (broadcast_msg_itr.hasNext()) {
+				String message = broadcast_msg_itr.next();
+				sendMessageToConnectedDevices(message);
+			}
+		} else {
+			is_req_from_gui = false;
+		}
 	}
 
 	// Send a message from radio to routing
@@ -570,6 +602,9 @@ public class Connection {
 				lastDiscovery = System.currentTimeMillis() / 1000;
 
 				Log.d(TAG, "Service Discovery Finished !");
+				
+				dispatchBroadcastQueue();
+				
 			} else if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
 				Log.d(TAG, "Bluetooth State Changed");
 				int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
