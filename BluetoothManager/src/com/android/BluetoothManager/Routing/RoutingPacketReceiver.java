@@ -60,7 +60,7 @@ public class RoutingPacketReceiver extends BroadcastReceiver {
 				bluetooth_manager.getResources().getString(
 						R.string.RADIO_TO_ROUTING))) {
 			bluetooth_manager.ui_handler.obtainMessage(2,
-					"Received: " + msg + " from Radio for deivce" + device)
+					"Received: " + msg + " from Radio for device" + device)
 					.sendToTarget();
 
 			RadioPacket radio_packet = new RadioPacket(device, msg);

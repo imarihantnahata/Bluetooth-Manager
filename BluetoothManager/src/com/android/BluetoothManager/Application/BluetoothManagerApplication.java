@@ -187,7 +187,7 @@ public class BluetoothManagerApplication extends Application {
 		Intent intent = new Intent();
 		intent.setAction(getResources().getString(R.string.UI_TO_ROUTING));
 		intent.putExtra("device", device);
-		intent.putExtra("msg", type+","+msg);
+		intent.putExtra("msg", msg);
 		Log.d(TAG, "Sending msg to Routing from UI :" + msg);
 		sendBroadcast(intent);
 
