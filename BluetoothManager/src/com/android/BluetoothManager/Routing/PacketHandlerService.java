@@ -41,19 +41,27 @@ public class PacketHandlerService extends Thread {
 			while (true) {
 				Log.d(TAG, "Looping through the iterators");
 				RoutingPacketReceiver.printQueues();
-
-				itr_UI = RoutingPacketReceiver.objectsFromUI.iterator();
-				for (; itr_UI.hasNext();) {
-					temp_UI = itr_UI.next();
-					this.processUIPacket(temp_UI);
+				
+				synchronized(RoutingPacketReceiver.objectsFromUI)
+				{
+					itr_UI = RoutingPacketReceiver.objectsFromUI.iterator();
+					for (; itr_UI.hasNext();) {
+						temp_UI = itr_UI.next();
+						this.processUIPacket(temp_UI);
+					}
 				}
 
-				itr_radio = RoutingPacketReceiver.objectsFromRadio.iterator();
-				for (; itr_radio.hasNext();) {
-					temp_radio = itr_radio.next();
-					this.processRadioPacket(temp_radio);
-				}
+				
+				synchronized(RoutingPacketReceiver.objectsFromRadio)
+				{
+					itr_radio = RoutingPacketReceiver.objectsFromRadio.iterator();
+					for (; itr_radio.hasNext();) {
+						temp_radio = itr_radio.next();
+						this.processRadioPacket(temp_radio);
+					}
 
+				}
+				
 				Thread.sleep(2000);
 			}
 		} 
