@@ -178,7 +178,7 @@ public class RouteTable {
 		} else {
 			Route isPresent = getRouteToDest(data_packet.getDest_addr());
 			if (isPresent != null) {
-				forwardMessage(isPresent.getNext_hop(),data_packet.getMsg());
+				forwardMessage(isPresent.getNext_hop(),data_packet.toString());
 			} 
 			else 
 			{
@@ -261,6 +261,7 @@ public class RouteTable {
 
 	void forwardMessage(String device, String data) {
 		
+		Log.d(TAG,"Forwarding msg :"+data+" to :"+device);
 		String ACTION = bluetooth_manager.getResources().getString(
 				R.string.ROUTING_TO_RADIO);
 		Intent i = new Intent();

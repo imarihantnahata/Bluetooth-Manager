@@ -97,6 +97,7 @@ public class PacketHandlerService extends Thread {
 						ui_packet.getDeviceToSend(), ui_packet.getMsg());
 				RouteTable.bluetooth_manager.route_table.forwardMessage(
 						gotRoute.getNext_hop(), data_packet.toString());
+				
 				Log.d(TAG,
 						"Route found, sending message:"
 								+ data_packet.toString() + " to "
