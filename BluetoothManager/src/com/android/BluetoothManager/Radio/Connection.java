@@ -269,6 +269,7 @@ public class Connection {
 	 */
 	public int sendMessageToDestination(String destination, String message)
 			throws RemoteException {
+		Log.d(TAG,"Unicasting "+message+" to :"+destination);
 
 		int status = connect(destination);
 
@@ -667,6 +668,7 @@ public class Connection {
 	 */
 	private class BtStreamWatcher extends Thread {
 		private String address;
+		private String TAG="StreamWatcher";
 		private long lastReceived = 0;
 
 		public long getLastReceived() {
@@ -698,10 +700,9 @@ public class Connection {
 						message = message
 								+ new String(buffer, 0, bytesRead - 1);
 						bluetooth_manager.ui_handler.obtainMessage(1,
-								"Received: " + message + " from: " + address)
+								"Received " + message + " from: " + address)
 								.sendToTarget();
-						Log.d(TAG, "Received " + message + " from " + address
-								+ "In Connection");
+						Log.d(TAG, "Received packet " + message + " from " + address);
 						lastReceived = System.currentTimeMillis() / 1000;
 						communicateFromRadioToRouting(address, message);
 					}

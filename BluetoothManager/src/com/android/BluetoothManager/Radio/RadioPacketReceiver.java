@@ -24,7 +24,7 @@ public class RadioPacketReceiver extends BroadcastReceiver{
 	public void onReceive(Context context, Intent intent) {
 		String device = intent.getStringExtra("device");
 		String msg = intent.getStringExtra("msg");
-		Log.d(TAG,"Received:"+msg+" from:"+device);
+		Log.d(TAG,"Intent Received from Routing to Radio :"+msg+" for:"+device);
 		try {
 			if(device == null){
 				Log.d(TAG, "Broadcasting msg:"+msg);

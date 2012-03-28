@@ -30,6 +30,7 @@ public class PacketParser {
 	}
 
 	public static int parseRREP(String device, String msg) {
+		Log.d(TAG,"Parsing RREP");
 		String packet_fields[] = msg.split(",");
 		long originator_seqNumber = Long.parseLong(packet_fields[1]);
 		String originator_addr = packet_fields[2];
