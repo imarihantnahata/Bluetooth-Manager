@@ -758,6 +758,8 @@ public class Connection {
 									.next();
 							time = ((BtStreamWatcher) pairs.getValue())
 									.getLastReceived();
+							if(time==0)
+								time=System.currentTimeMillis()/1000;
 							Log.d(TAG,"Thread Duration in seconds:"+(System.currentTimeMillis() / 1000 - time));
 							if (System.currentTimeMillis() / 1000 - time > 300) {
 								String address = (String) pairs.getKey();
