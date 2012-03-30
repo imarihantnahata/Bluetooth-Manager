@@ -59,16 +59,20 @@ public class UIPacketReceiver extends BroadcastReceiver {
 		adapter.printContents(adapter.deviceAddresses);
 		Log.d(TAG, "Received msg:" + msg + " from:" + device);
 
+		String src_name=msg.substring(0,msg.indexOf(','));
+		
+		msg=msg.substring(msg.indexOf(',')+1);
+		
 		// Find the type of packet received. i.e. chat or msg
 		String dataType = msg.substring(0, msg.indexOf(","));
-
+		
 		// Process the packet according to the type.
 		if (dataType.equals(MSG_TYPE)) {
-			processMsgData(device, name, msg.substring(msg.indexOf(",") + 1));
+			processMsgData(device, src_name, msg.substring(msg.indexOf(",") + 1));
 			return;
 		}
 		if (dataType.equals(CHAT_TYPE)) {
-			processChatData(device, name, msg.substring(msg.indexOf(",") + 1));
+			processChatData(device, src_name, msg.substring(msg.indexOf(",") + 1));
 			return;
 		}
 

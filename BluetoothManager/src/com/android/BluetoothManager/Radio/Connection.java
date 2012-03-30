@@ -805,4 +805,8 @@ public class Connection {
 			}
 		}
 	}
+
+	public String getSelfName() {
+		return BtAdapter.getName();
+	}
 }
