@@ -539,6 +539,15 @@ public class Connection {
 		bluetooth_manager.sendBroadcast(i);
 		Log.d(TAG, "Intent Send from Radio to routing");
 	}
+	
+	public String getNameFromAddress(String address){
+		String name = null;
+		name = BtBondedDevices.get(address);
+		if(name == null){
+			name = BtFoundDevices.get(address);
+		}
+		return name;
+	}
 
 	/*
 	 * FriendServer that listens for friendly connections. This mechanism is
@@ -569,7 +578,6 @@ public class Connection {
 											// that the node is running our
 											// application
 					}
-
 				} catch (IOException e) {
 					Log.d(TAG, "Error in FriendServer: " + e.getMessage());
 				}
@@ -674,6 +682,10 @@ public class Connection {
 		public long getLastReceived() {
 			return lastReceived;
 		}
+		
+		public void setLastReceived(long time){
+			this.lastReceived=time;
+		}
 
 		public BtStreamWatcher(String deviceAddress) {
 			address = deviceAddress;
@@ -708,7 +720,6 @@ public class Connection {
 					}
 				}
 			}
-
 			catch (IOException e) {
 				Log.i(TAG,
 						"IOException in BtStreamWatcher - probably caused by normal disconnection",
@@ -760,7 +771,10 @@ public class Connection {
 							time = ((BtStreamWatcher) pairs.getValue())
 									.getLastReceived();
 							if(time==0)
+							{
 								time=System.currentTimeMillis()/1000;
+								((BtStreamWatcher) pairs.getValue()).setLastReceived(time);
+							}
 							Log.d(TAG,"Thread Duration in seconds:"+(System.currentTimeMillis() / 1000 - time));
 							if (System.currentTimeMillis() / 1000 - time > 300) {
 								String address = (String) pairs.getKey();

@@ -54,7 +54,7 @@ public class UIPacketReceiver extends BroadcastReceiver {
 
 		String device = intent.getStringExtra("device");
 		String msg = intent.getStringExtra("msg");
-		String name = "Null";//adapter.deviceNames.get((adapter.deviceAddresses.indexOf(device)));
+		String name = bluetooth_manager.connection.getNameFromAddress(device);
 		adapter.printContents(adapter.deviceNames);
 		adapter.printContents(adapter.deviceAddresses);
 		Log.d(TAG, "Received msg:" + msg + " from:" + device);
