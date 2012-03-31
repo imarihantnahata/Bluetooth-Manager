@@ -28,10 +28,10 @@ public class RadioPacketReceiver extends BroadcastReceiver{
 		try {
 			if(device == null){
 				Log.d(TAG, "Broadcasting msg:"+msg);
-				bluetooth_manager.connection.broadcastMessage(msg);
+				bluetooth_manager.connection_manager.broadcastMessage(msg);
 				return;
 			}
-			bluetooth_manager.connection.sendMessageToDestination(device, msg);
+			bluetooth_manager.connection_manager.sendMessageToDestination(device, msg);
 		} catch (RemoteException e) {
 			Log.d(TAG, "Unable to send msg to :"+device);
 		}
