@@ -172,6 +172,7 @@ public class RouteTable {
 			Intent i = new Intent();
 			i.putExtra("device", device);
 			i.putExtra("msg", data_packet.getMsg());
+			i.putExtra("src_name", data_packet.getSrc_Name());
 			i.setAction(ACTION);
 			Log.d(TAG,"Received msg:"+data_packet.getMsg()+"from: "+device);
 			bluetooth_manager.sendBroadcast(i);

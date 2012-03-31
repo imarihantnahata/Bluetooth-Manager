@@ -54,15 +54,12 @@ public class UIPacketReceiver extends BroadcastReceiver {
 
 		String device = intent.getStringExtra("device");
 		String msg = intent.getStringExtra("msg");
-		String name = bluetooth_manager.connection_manager.getNameFromAddress(device);
+		String src_name = intent.getStringExtra("src_name");
+		
 		adapter.printContents(adapter.deviceNames);
 		adapter.printContents(adapter.deviceAddresses);
 		Log.d(TAG, "Received msg:" + msg + " from:" + device);
 
-		String src_name=msg.substring(0,msg.indexOf(','));
-		
-		msg=msg.substring(msg.indexOf(',')+1);
-		
 		// Find the type of packet received. i.e. chat or msg
 		String dataType = msg.substring(0, msg.indexOf(","));
 		
