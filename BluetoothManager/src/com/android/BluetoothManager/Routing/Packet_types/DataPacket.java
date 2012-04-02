@@ -4,11 +4,13 @@ package com.android.BluetoothManager.Routing.Packet_types;
  */
 public class DataPacket {
 	String dest_addr;
+	String src_name;
 	String msg;
 	
-	public DataPacket(String dest_addr, String msg) {
+	public DataPacket(String dest_addr, String src_name, String msg) {
 		super();
 		this.dest_addr = dest_addr;
+		this.src_name= src_name;
 		this.msg = msg;
 	}
 
@@ -16,6 +18,11 @@ public class DataPacket {
 		return dest_addr;
 	}
 
+	public String getSrc_Name()
+	{
+		return src_name;
+	}
+	
 	public void setDest_addr(String dest_addr) {
 		this.dest_addr = dest_addr;
 	}
@@ -30,7 +37,7 @@ public class DataPacket {
 	
 	public String toString()
 	{
-		return "4,"+dest_addr+","+msg;
+		return "4,"+dest_addr+","+src_name+","+msg;
 	}
 	
 }

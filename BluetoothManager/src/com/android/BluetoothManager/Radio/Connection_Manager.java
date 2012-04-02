@@ -29,7 +29,7 @@ import com.android.BluetoothManager.Routing.PacketHandlerService;
 import com.android.BluetoothManager.Routing.RouteTable;
 import com.android.BluetoothManager.UI.R;
 
-public class Connection {
+public class Connection_Manager {
 
 	private static final String TAG = "Connection";
 
@@ -47,41 +47,25 @@ public class Connection {
 
 	private Thread server_thread = null;
 
-	private String service_name = "BluetoothManagerService"; // Random String
-	// used for
-	// starting
-	// server.
-
+	//Random String used for starting server
+	private String service_name = "BluetoothManagerService";
+	
 	private String friend_service_name = "Friend_Service"; // Random String
 
 	private ArrayList<UUID> Uuids; // List of UUID's
 
-	UUID friend_uuid; // UUID to check if this application is running on other
-						// phone or not.
+	// UUID to check if this application is running on other phone or not.
+	UUID friend_uuid; 
 
 	Thread friendServer;
+	
+	ArrayList<String> BtConnectedDeviceAddresses;	// MAC's already connected to 
 
-	ArrayList<String> BtConnectedDeviceAddresses; // List of addresses
-													// to which
-	// the devices are currently
-	// connected
+	HashMap<String, BluetoothSocket> BtSockets;		// Mapping between a MAC and its socket
+	 
+	HashMap<String, String> BtFoundDevices;		// Found devices and their names
 
-	HashMap<String, BluetoothSocket> BtSockets; // Mapping between
-												// address and the
-												// corresponding Scoket
-
-	HashMap<String, String> BtFoundDevices; // Mapping between the
-											// devices and the names.
-											// this list to be passed to
-											// the UI layer.contains
-											// only found devices
-
-	HashMap<String, String> BtBondedDevices; // Mapping between the
-												// devices and the
-												// names. this list to
-												// be passed to the UI
-												// layer. contains only
-												// Bonded devices
+	HashMap<String, String> BtBondedDevices; 	// Paired devices and their names
 
 	HashMap<String, BtStreamWatcher> BtStreamWatcherThreads;
 
@@ -89,13 +73,13 @@ public class Connection {
 
 	BluetoothManagerApplication bluetooth_manager;
 
-	gc_thread maintainence_thread;
+	gc_thread maintainence_thread;				//Thread that will do the maintenance
 
 	boolean isSearching = false;
 
 	private long lastDiscovery = 0; // Stores the time of the last discovery
 
-	public Connection(BluetoothManagerApplication bluetooth_manager) {
+	public Connection_Manager(BluetoothManagerApplication bluetooth_manager) {
 
 		this.bluetooth_manager = bluetooth_manager;
 
@@ -127,8 +111,7 @@ public class Connection {
 		Log.d(TAG, "Connection Object Constructed");
 	}
 
-	/*
-	 * Function that will start Discovery only if it was done more than a minute
+	/* Function that will start Discovery only if it was done more than a minute
 	 * ago
 	 */
 	public void startDiscovery() {
@@ -169,7 +152,7 @@ public class Connection {
 			Log.d(TAG, "Trying to connect to: " + device);
 			if (BtConnectedDeviceAddresses.contains(device)) {
 				Log.d(TAG, "Already connected to: " + device);
-				return Connection.SUCCESS;
+				return Connection_Manager.SUCCESS;
 			}
 
 			BluetoothDevice myBtServer = BtAdapter.getRemoteDevice(device);
@@ -178,7 +161,7 @@ public class Connection {
 
 			Log.d(TAG, "Creating Socket");
 
-			for (int i = 0; i < Connection.MAX_CONNECTIONS_SUPPORTED
+			for (int i = 0; i < Connection_Manager.MAX_CONNECTIONS_SUPPORTED
 					&& myBSock == null; i++) {
 				myBSock = getConnectedSocket(myBtServer, Uuids.get(i));
 
@@ -193,7 +176,7 @@ public class Connection {
 				}
 			}
 			if (myBSock == null) {
-				return Connection.FAILURE;
+				return Connection_Manager.FAILURE;
 			}
 
 			BtSockets.put(device, myBSock);
@@ -201,9 +184,9 @@ public class Connection {
 			BtStreamWatcher BtStreamWatcherThread = new BtStreamWatcher(device);
 			BtStreamWatcherThread.start();
 			BtStreamWatcherThreads.put(device, BtStreamWatcherThread);
-			return Connection.SUCCESS;
+			return Connection_Manager.SUCCESS;
 		} else
-			return Connection.FAILURE;
+			return Connection_Manager.FAILURE;
 	}
 
 	/*
@@ -249,7 +232,7 @@ public class Connection {
 				Log.d(TAG, "Error in sendMsgToDestination:" + e.getMessage());
 			}
 		}
-		return Connection.SUCCESS;
+		return Connection_Manager.SUCCESS;
 	}
 
 	// For debugging. To print connections at a certain point of time
@@ -273,7 +256,7 @@ public class Connection {
 
 		int status = connect(destination);
 
-		if (status == Connection.SUCCESS) {
+		if (status == Connection_Manager.SUCCESS) {
 			try {
 				BluetoothSocket myBsock = BtSockets.get(destination);
 				if (myBsock != null) {
@@ -283,14 +266,14 @@ public class Connection {
 					stringAsBytes[stringAsBytes.length - 1] = 0; // Add a stop
 					// marker
 					outStream.write(stringAsBytes);
-					return Connection.SUCCESS;
+					return Connection_Manager.SUCCESS;
 				}
 			} catch (IOException e) {
 				Log.i(TAG, "IOException in sendMessage - Dest:" + destination
 						+ ", Msg:" + message, e);
 			}
 		}
-		return Connection.FAILURE;
+		return Connection_Manager.FAILURE;
 	}
 
 	public String getAddress() throws RemoteException {
@@ -451,7 +434,7 @@ public class Connection {
 		}
 
 		if (server_isRunning) {
-			return Connection.FAILURE;
+			return Connection_Manager.FAILURE;
 		}
 		if (BtAdapter.isEnabled()) {
 
@@ -469,9 +452,9 @@ public class Connection {
 			// friendServer.start();
 			Log.d(TAG, " ++ Server Started ++");
 
-			return Connection.SUCCESS;
+			return Connection_Manager.SUCCESS;
 		}
-		return Connection.FAILURE;
+		return Connection_Manager.FAILURE;
 
 	}
 
@@ -505,9 +488,9 @@ public class Connection {
 			} catch (IOException e) {
 				Log.d(TAG, "Error in stopRadio(). " + e.getMessage());
 			}
-			return Connection.SUCCESS;
+			return Connection_Manager.SUCCESS;
 		} else {
-			return Connection.FAILURE;
+			return Connection_Manager.FAILURE;
 		}
 
 	}
@@ -522,6 +505,7 @@ public class Connection {
 			while (broadcast_msg_itr.hasNext()) {
 				String message = broadcast_msg_itr.next();
 				sendMessageToConnectedDevices(message);
+				broadcast_msg_itr.remove();
 			}
 		} else {
 			is_req_from_gui = false;
@@ -538,6 +522,15 @@ public class Connection {
 		i.putExtra("msg", message);
 		bluetooth_manager.sendBroadcast(i);
 		Log.d(TAG, "Intent Send from Radio to routing");
+	}
+	
+	public String getNameFromAddress(String address){
+		String name = null;
+		name = BtBondedDevices.get(address);
+		if(name == null){
+			name = BtFoundDevices.get(address);
+		}
+		return name;
 	}
 
 	/*
@@ -569,7 +562,6 @@ public class Connection {
 											// that the node is running our
 											// application
 					}
-
 				} catch (IOException e) {
 					Log.d(TAG, "Error in FriendServer: " + e.getMessage());
 				}
@@ -587,10 +579,13 @@ public class Connection {
 
 			// When discovery finds a device
 			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+				
 				// Get the BluetoothDevice object from the Intent
 				BluetoothDevice device = intent
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				BluetoothClass bc = device.getBluetoothClass();
+				
+				// if its a mobile phone, put it on the foundDevices list
 				if (bc.getMajorDeviceClass() == BluetoothClass.Device.Major.PHONE) {
 					BtFoundDevices.put(device.getAddress(), device.getName());
 				}
@@ -651,7 +646,7 @@ public class Connection {
 							address);
 					BtStreamWatcherThread.start();
 					BtStreamWatcherThreads.put(address, BtStreamWatcherThread);
-					if (i == Connection.MAX_CONNECTIONS_SUPPORTED - 1) {
+					if (i == Connection_Manager.MAX_CONNECTIONS_SUPPORTED - 1) {
 						i = 0;
 					}
 				}
@@ -673,6 +668,10 @@ public class Connection {
 
 		public long getLastReceived() {
 			return lastReceived;
+		}
+		
+		public void setLastReceived(long time){
+			this.lastReceived=time;
 		}
 
 		public BtStreamWatcher(String deviceAddress) {
@@ -708,7 +707,6 @@ public class Connection {
 					}
 				}
 			}
-
 			catch (IOException e) {
 				Log.i(TAG,
 						"IOException in BtStreamWatcher - probably caused by normal disconnection",
@@ -744,10 +742,10 @@ public class Connection {
 			long time;
 			while (true) {
 				if (server_isRunning) {
-					if (bluetooth_manager.connection.getBluetoothAdapter()
+					if (bluetooth_manager.connection_manager.getBluetoothAdapter()
 							.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
 
-						bluetooth_manager.connection.makeDeviceDisocverable();
+						bluetooth_manager.connection_manager.makeDeviceDisocverable();
 					}
 
 					Log.d(TAG, "Connections are :" + getConnections());
@@ -760,7 +758,10 @@ public class Connection {
 							time = ((BtStreamWatcher) pairs.getValue())
 									.getLastReceived();
 							if(time==0)
+							{
 								time=System.currentTimeMillis()/1000;
+								((BtStreamWatcher) pairs.getValue()).setLastReceived(time);
+							}
 							Log.d(TAG,"Thread Duration in seconds:"+(System.currentTimeMillis() / 1000 - time));
 							if (System.currentTimeMillis() / 1000 - time > 300) {
 								String address = (String) pairs.getKey();
@@ -790,5 +791,9 @@ public class Connection {
 				}
 			}
 		}
+	}
+
+	public String getSelfName() {
+		return BtAdapter.getName();
 	}
 }

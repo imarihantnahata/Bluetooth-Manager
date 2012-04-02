@@ -5,6 +5,7 @@ import java.util.Iterator;
 import android.bluetooth.BluetoothAdapter;
 import android.util.Log;
 
+import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 import com.android.BluetoothManager.Routing.Packet_types.DataPacket;
 import com.android.BluetoothManager.Routing.Packet_types.RadioPacket;
 import com.android.BluetoothManager.Routing.Packet_types.Route_Message;
@@ -94,7 +95,9 @@ public class PacketHandlerService extends Thread {
 					.getRouteToDest(ui_packet.getDeviceToSend());
 			if (gotRoute != null) {
 				DataPacket data_packet = new DataPacket(
-						ui_packet.getDeviceToSend(), ui_packet.getMsg());
+						ui_packet.getDeviceToSend(),
+						RouteTable.bluetooth_manager.connection_manager.getSelfName(),
+						ui_packet.getMsg());
 				RouteTable.bluetooth_manager.route_table.forwardMessage(
 						gotRoute.getNext_hop(), data_packet.toString());
 				

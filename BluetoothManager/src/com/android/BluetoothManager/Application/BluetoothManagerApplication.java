@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.android.BluetoothManager.Radio.Connection;
+import com.android.BluetoothManager.Radio.Connection_Manager;
 import com.android.BluetoothManager.Radio.RadioPacketReceiver;
 import com.android.BluetoothManager.Routing.PacketHandlerService;
 import com.android.BluetoothManager.Routing.RouteTable;
@@ -17,29 +17,32 @@ import com.android.BluetoothManager.Routing.RoutingPacketReceiver;
 import com.android.BluetoothManager.UI.R;
 import com.android.BluetoothManager.UI.UIPacketReceiver;
 
-/*
- * Contains global adapters and other state variables required
- * Initializes the service.
+/* Context used for access to objects across application.
+ * Initialises the radio and routing objects.
  * All the registration of the BroadcastReceivers are done here.
  */
+
 public class BluetoothManagerApplication extends Application {
 
 	private static final String TAG = "BluetoothManagerApplication";
 
-	// Packet receiver for routing layer
-	RoutingPacketReceiver packet_receiver;
-
-	public PacketHandlerService routing_thread;
-
-	// Packet receiver for UI layer
-	public UIPacketReceiver ui_packet_receiver;
-
 	// Packet receiver for radio layer
 	RadioPacketReceiver radio_packet_receiver;
+	
+	// Radio layer object managing connections
+	public Connection_Manager connection_manager;
+	
+	// Packet receiver for routing layer
+	RoutingPacketReceiver routing_packet_receiver;
 
+	//Routing thread
+	public PacketHandlerService routing_thread;
+
+	// The table that will be used for routing
 	public RouteTable route_table;
-
-	public Connection connection;
+	
+	// Packet receiver for UI layer
+	public UIPacketReceiver ui_packet_receiver;
 
 	public Handler ui_handler;
 	
@@ -47,19 +50,9 @@ public class BluetoothManagerApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 
-		/*
-		 * Instantiating the Radio layer and starting the server to listen for
-		 * incoming connections
-		 */
-		Log.d(TAG, "Instantiating the Radio layer and starting ");
-		connection = new Connection(this);
+		// Instantiate the radio connection_manager
+		connection_manager = new Connection_Manager(this);
 		
-
-		/* Start the friend server which is used to determine if node runs our
-		 * application or not
-		 */
-		//connection.startFriendServer();
-
 		// Getting the intent strings from the XML file.
 		Log.d(TAG, "Application OnCreate");
 		String UI_TO_ROUTING = getResources().getString(R.string.UI_TO_ROUTING);
@@ -69,17 +62,12 @@ public class BluetoothManagerApplication extends Application {
 		String ROUTING_TO_RADIO = getResources().getString(
 				R.string.ROUTING_TO_RADIO);
 
-		// Here starts the registration of the listeners for intents.
-
-		/*
-		 * Instantiate the PacketReciever and registering it to listen for
-		 * packets from UI and Routing layer
-		 */
-		packet_receiver = new RoutingPacketReceiver(this);
+		// Instantiate the PacketRecievers and registering it to listen for respective packets
+		routing_packet_receiver = new RoutingPacketReceiver(this);
 		IntentFilter r = new IntentFilter();
 		r.addAction(UI_TO_ROUTING);
 		r.addAction(RADIO_TO_ROUTING);
-		registerReceiver(packet_receiver, r);
+		registerReceiver(routing_packet_receiver, r);
 
 		// Instantiate the UI Receiver and registering it.
 		ui_packet_receiver = new UIPacketReceiver(this);
@@ -93,36 +81,30 @@ public class BluetoothManagerApplication extends Application {
 		p.addAction(ROUTING_TO_RADIO);
 		registerReceiver(radio_packet_receiver, p);
 
-		// Initialize the route table on startup
+		// Initialise the route table on startup
 		route_table = new RouteTable(this);
 
-		// The routing thread is started which processes the UI an Radio Queues.
-		Log.d(TAG, "Creating Routing thread ");
+		// The routing thread is created which processes the UI an Radio Queues.
 		routing_thread = new PacketHandlerService();
 
-		Log.d(TAG, "Routing Thread Started !");
-
-		// Testing UI via Stubs
-		Thread ui_stub = new Thread(new UIStub());
-		ui_stub.start();
-		
 		//Start the radio layer, which will also start routing thread
-		connection.startRadio();
-
+		connection_manager.startRadio();
 	}
 
 	@Override
 	public void onTerminate() {
 		super.onTerminate();
 
-		connection.stopRadio();
-		connection=null;
-		route_table=null;		
+		route_table=null;
+		routing_thread.interrupt();
+		routing_thread=null;
+		connection_manager.stopRadio();
+		connection_manager=null;
 	}
 
 	public String getSelfAddress() {
 		try {
-			return connection.getAddress();
+			return connection_manager.getAddress();
 		} catch (RemoteException e) {
 			Log.d(TAG, " ++ Unable to retrieve selfAddress");
 		}
@@ -130,56 +112,7 @@ public class BluetoothManagerApplication extends Application {
 	}
 
 	public HashMap<String, String> getConnectableDevices() {
-//		HashMap<String,String> h = new HashMap<String, String>();
-//		h.put("12.12.12.12.12.12","ABC");
-//		h.put("34.34.34.34.34.34","PQR");
-//		h.put("56.56.56.56.56.56","XYZ");
-//		return h;
-		return connection.getPairedDevices();
-	}
-
-	// This class iS SOLELY for testing Chat UI
-	private class UIStub implements Runnable {
-
-		@Override
-		public void run() {
-//			pause(5);
-//			mSendIntent("123", "aru", "chat,hello :D");
-//			pause(5);
-//			mSendIntent("123", "aru", "chat,hello hi :D");
-//			pause(5);
-//			mSendIntent("321", "arihant", "chat,HAHAHAHA");
-//			pause(5);
-//			mSendIntent("123", "aru", "chat,hello sdfsdf");
-//			pause(5);
-//			mSendIntent("789", "pik", "chat,Arihant");
-//			pause(5);
-//			mSendIntent("789", "pik", "chat,Arihant123");
-//			pause(5);
-//			mSendIntent("123", "aru", "chat,hello hi :D");
-//			pause(10000);
-//			mSendIntent("888", "God", "chat,This is God !");
-		}
-
-		public void pause(int seconds) {
-			try {
-				Thread.sleep(seconds);
-			} catch (InterruptedException e) {
-				Log.d(TAG, "Error in Sleep: " + e.getMessage());
-			}
-		}
-
-//		public void mSendIntent(String device, String name, String msg) {
-//			Intent i = new Intent();
-//			i.setAction(getResources().getString(R.string.ROUTING_TO_UI));
-//			i.putExtra("device", device);
-//			i.putExtra("name", name);
-//			i.putExtra("msg", msg);
-//			Log.d(TAG, "Generating Intent: device-" + device + " name-" + name
-//					+ " msg-" + msg);
-//			sendBroadcast(i);
-//		}
-
+		return connection_manager.getPairedDevices();
 	}
 
 	public void sendDataToRoutingFromUI(String device, String msg, String type) {
