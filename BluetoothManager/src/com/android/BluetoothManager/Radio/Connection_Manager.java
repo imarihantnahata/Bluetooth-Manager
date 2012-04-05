@@ -575,7 +575,7 @@ public class Connection_Manager {
 
 				isSearching = false;
 				lastDiscovery = System.currentTimeMillis() / 1000;
-				Intent discoveryFinished= new Intent(bluetooth_manager.getResources().getString(R.string.SCAN_COMPLETE));
+				Intent discoveryFinished= new Intent(bluetooth_manager.getResources().getString(R.string.DISCOVERY_COMPLETE));
 				bluetooth_manager.sendBroadcast(discoveryFinished);
 				Log.d(TAG, "Service Discovery Finished !");
 				

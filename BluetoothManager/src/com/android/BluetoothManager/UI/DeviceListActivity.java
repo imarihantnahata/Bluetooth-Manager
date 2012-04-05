@@ -42,7 +42,7 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 	BroadcastReceiver receiver= new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if(intent.getAction().equals(getResources().getString(R.string.SCAN_COMPLETE)))
+			if(intent.getAction().equals(getResources().getString(R.string.DISCOVERY_COMPLETE)))
 			{
 				Log.d(TAG,"Received Scan Complete Intent");
 				dismissDialog(Scanning_Dialog);
@@ -56,7 +56,7 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.device_list);
 		
-		registerReceiver(receiver, new IntentFilter(getResources().getString(R.string.SCAN_COMPLETE)));
+		registerReceiver(receiver, new IntentFilter(getResources().getString(R.string.DISCOVERY_COMPLETE)));
 				
 		UI.bluetooth_manager.connection_manager.startDiscovery();
 		UI.is_UI_searching=true;
