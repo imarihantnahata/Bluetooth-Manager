@@ -50,7 +50,7 @@ public class Connection_Manager {
 	//Random String used for starting server
 	private String service_name = "BluetoothManagerService";
 	
-	private String friend_service_name = "Friend_Service"; // Random String
+	//private String friend_service_name = "Friend_Service"; // Random String
 
 	private ArrayList<UUID> Uuids; // List of UUID's
 
@@ -140,8 +140,7 @@ public class Connection_Manager {
 		}
 	}
 
-	/*
-	 * Function to connect to a remote device. Will first check if already
+	/* Function to connect to a remote device. Will first check if already
 	 * connected. If not, it will try to create a socket from the list of 7
 	 * UUID's on the device. If found, it will create a watcher thread for that
 	 * device and add to the connected devices and start listening
@@ -276,7 +275,7 @@ public class Connection_Manager {
 		return Connection_Manager.FAILURE;
 	}
 
-	public String getAddress() throws RemoteException {
+	public String getSelfAddress() throws RemoteException {
 		return BtAdapter.getAddress();
 	}
 
@@ -284,8 +283,7 @@ public class Connection_Manager {
 		return BtAdapter;
 	}
 
-	/*
-	 * Function that will return the devices that are already paired, but not
+	/* Function that will return the devices that are already paired, but not
 	 * necessarily in range
 	 */
 	public HashMap<String, String> getPairedDevices() {
@@ -298,31 +296,16 @@ public class Connection_Manager {
 		return BtBondedDevices;
 	}
 
-	/*
-	 * Function that will make connections to only the devices which are found.
+	/* Function that will make connections to only the devices which are found.
 	 * They have to be discoverable and within range
 	 */
 	public void connectToFoundDevices() {
 
 		if (server_isRunning) {
 
-			Log.d(TAG, "connectToFoundDevices() called");
-			Log.d(TAG, "Current Time:" + System.currentTimeMillis() / 1000);
-
-			// while(isSearching)
-			// { // Wait if the adapter is already searching.
-			// Log.d(TAG,"Waiting for search to complete");
-			// try {
-			// Thread.sleep(2000);
-			// } catch (InterruptedException e) {
-			// Log.d(TAG,"Exception in wait sleep"+e.getMessage());
-			// }
-			// }
-			Log.d(TAG, "Last Search:" + lastDiscovery);
+			Log.d(TAG, "Connecting to "+BtFoundDevices.size()+" found devices. Last Search :" + lastDiscovery);
 			Iterator<Map.Entry<String, String>> devices = BtFoundDevices
 					.entrySet().iterator();
-			Log.d(TAG,
-					"No of devices in BtFoundDevices " + BtFoundDevices.size());
 			while (devices.hasNext()) {
 				Map.Entry<String, String> device = (Map.Entry<String, String>) devices
 						.next();
@@ -340,6 +323,9 @@ public class Connection_Manager {
 		}
 	}
 
+	/* Function that is called to make the device discoverable. 
+	 * Gets maximum time depending on device.
+	 */
 	public void makeDeviceDisocverable() {
 		Log.d(TAG, "Making Device Discoverable.");
 		Intent i = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
@@ -348,8 +334,7 @@ public class Connection_Manager {
 		bluetooth_manager.startActivity(i);
 	}
 
-	/*
-	 * This function takes the MAC address of the device and tries to find if
+	/* This function takes the MAC address of the device and tries to find if
 	 * this application is running on the device with the given MAC address. It
 	 * tries to connect to the device, if connection is successful then we can
 	 * conclude that the application is running on the device.
@@ -398,7 +383,7 @@ public class Connection_Manager {
 		// return is_my_friend;
 	}
 
-	// /*
+	/*
 	// * Start the server which listens for connection which is used to
 	// determine
 	// * if the other node has our application running or not.
@@ -408,15 +393,18 @@ public class Connection_Manager {
 	// friendServer.start();
 	// }
 
-	/*
-	 * Function to be called when Application starts and later when Bluetooth is
+	/* Function to be called when Application starts and later when Bluetooth is
 	 * turned on. Instantiates the lists, checks if Adapter is enabled and
 	 * starts the server thread
 	 */
 	public int startRadio() {
 
+		if (server_isRunning) {
+			return Connection_Manager.FAILURE;
+		}
+		
 		BtSockets = new HashMap<String, BluetoothSocket>();
-
+		
 		BtConnectedDeviceAddresses = new ArrayList<String>();
 
 		BtBondedDevices = new HashMap<String, String>();
@@ -428,32 +416,32 @@ public class Connection_Manager {
 		broadcast_msg_queue = new LinkedList<String>();
 
 		bluetooth_manager.route_table = new RouteTable(bluetooth_manager);
+		
 		BtAdapter = BluetoothAdapter.getDefaultAdapter();
+		
 		if (BtAdapter != null) {
 			BtAdapter.enable();
 		}
-
-		if (server_isRunning) {
-			return Connection_Manager.FAILURE;
-		}
+		
 		if (BtAdapter.isEnabled()) {
 
 			if (server_thread == null) {
 				server_thread = new Thread(new ConnectionWaiter());
 				server_thread.start();
 				server_isRunning = true;
-				Log.d(TAG, "Created Server");
+				Log.d(TAG, "++Listening thread Started++");
 			} else
-				Log.d(TAG, "Server already Created");
+				Log.d(TAG, "Server already Listening");
 
+			Log.d(TAG,"++Starting Routing thread++");
 			bluetooth_manager.routing_thread = new PacketHandlerService();
 			bluetooth_manager.routing_thread.start();
 			// friendServer= new Thread(new FriendServer());
 			// friendServer.start();
 			Log.d(TAG, " ++ Server Started ++");
-
 			return Connection_Manager.SUCCESS;
 		}
+		
 		return Connection_Manager.FAILURE;
 
 	}
@@ -495,6 +483,9 @@ public class Connection_Manager {
 
 	}
 	
+	/* Function that will dispatch all broadcast messages waiting in 
+	 * the queue to the devices it has found. 
+	 */
 	public void dispatchBroadcastQueue(){
 		Log.d(TAG,"Value of flag:"+is_req_from_gui);
 		
@@ -536,7 +527,7 @@ public class Connection_Manager {
 	/*
 	 * FriendServer that listens for friendly connections. This mechanism is
 	 * just used to check if the node is running our application.
-	 */
+	 
 	private class FriendServer implements Runnable {
 
 		@Override
@@ -568,7 +559,7 @@ public class Connection_Manager {
 			}
 
 		}
-	}
+	}*/
 
 	// The BroadcastReceiver that listens for discovered devices and
 	// changes the title when discovery is finished
@@ -599,6 +590,7 @@ public class Connection_Manager {
 
 				Log.d(TAG, "Service Discovery Finished !");
 				
+				//Discovery is finished, now send all messages waiting to be broadcast
 				dispatchBroadcastQueue();
 				
 			} else if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
@@ -619,9 +611,8 @@ public class Connection_Manager {
 		}
 	};
 
-	/*
-	 * This class is responsible for listening for new connections. Once a
-	 * connections is accepted, a new thread is created to manage the i/p, o/p
+	/* This class is responsible for listening for new connections. Once a
+	 * connections is accepted, a new thread is created to manage the I/O
 	 * with the newly established connection
 	 */
 	private class ConnectionWaiter implements Runnable {
@@ -658,12 +649,11 @@ public class Connection_Manager {
 		}
 	}
 
-	/*
-	 * Thread which maintains the I/O of one stream for one device
-	 */
+	// Thread which maintains the I/O of one stream for one device
+	
 	private class BtStreamWatcher extends Thread {
 		private String address;
-		private String TAG="StreamWatcher";
+		private String TAG;
 		private long lastReceived = 0;
 
 		public long getLastReceived() {
@@ -676,6 +666,7 @@ public class Connection_Manager {
 
 		public BtStreamWatcher(String deviceAddress) {
 			address = deviceAddress;
+			TAG="StreamWatcher for "+address;
 		}
 
 		public void run() {
@@ -738,6 +729,7 @@ public class Connection_Manager {
 
 		Iterator<Map.Entry<String, BtStreamWatcher>> it;
 
+		String TAG="Maintenance Thread";
 		public void run() {
 			long time;
 			while (true) {

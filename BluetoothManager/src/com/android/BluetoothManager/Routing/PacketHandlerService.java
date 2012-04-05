@@ -85,7 +85,6 @@ public class PacketHandlerService extends Thread {
 	void processUIPacket(UIPacket ui_packet) {
 		if ((System.currentTimeMillis() / 1000 - ui_packet.getTimestamp()) > 60) {
 			RoutingPacketReceiver.objectsFromUI.remove(ui_packet);
-			// TODO notify UI could not send
 		} else {
 			Log.d(TAG,
 					"Difference: "

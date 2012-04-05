@@ -104,7 +104,7 @@ public class BluetoothManagerApplication extends Application {
 
 	public String getSelfAddress() {
 		try {
-			return connection_manager.getAddress();
+			return connection_manager.getSelfAddress();
 		} catch (RemoteException e) {
 			Log.d(TAG, " ++ Unable to retrieve selfAddress");
 		}
