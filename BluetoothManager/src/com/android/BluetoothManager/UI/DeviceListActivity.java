@@ -4,7 +4,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,41 +23,112 @@ import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 
 public class DeviceListActivity extends BaseActivity implements OnItemClickListener {
 	private static final String TAG = "DeviceListActivity";
-
+	private static final String SCAN_COMPLETE_INTENT="Scan Complete";
+	
+	
 	ListView lv;
 
-	ArrayAdapter<String> bondedDevices;
-
-	BluetoothManagerApplication bluetooth_manager;
+	ArrayAdapter<String> listOfDevices;
 
 	HashMap<String, String> btPaired;
+	
+	HashMap<String, String> btFound;
 
+	ProgressDialog progDialog;
+	
 	public static String DEVICE_ADDRESS = "address";
 	public static String DEVICE_NAME = "name";
+	public static final int Scanning_Dialog=0;
+	boolean showing_ScanningDialog=false;
+	
+	BroadcastReceiver receiver= new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction().equals(SCAN_COMPLETE_INTENT))
+			{
+				Log.d(TAG,"Received Scan Complete Intent");
+				pollDevices();
+			}
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.device_list);
+		
+		registerReceiver(receiver, new IntentFilter(SCAN_COMPLETE_INTENT));
+		
+		
+		UI.bluetooth_manager.connection_manager.startDiscovery();
+		UI.is_UI_searching=true;
+		
+		showDialog(Scanning_Dialog);
+		showing_ScanningDialog=true;
+		
 		bluetooth_manager = (BluetoothManagerApplication) getApplication();
 		Log.d(TAG,"Calling startDiscovery from DeviceListActivity");
-		bluetooth_manager.connection_manager.startDiscovery();
-		bluetooth_manager.connection_manager.is_req_from_gui = true;
-		btPaired = bluetooth_manager.connection_manager.getPairedDevices();
 		
-		//btPaired = bluetooth_manager.getConnectableDevices();
+		/* Thread which checks if the scanning UI has requested (DeviceListActivity) 
+		 * has been completed. If yes, it dismisses the waiting dialog and returns
+		 */
+		new Thread(){
+			public void run()
+			{
+				while(true)
+				{
+					try{
+						Thread.sleep(750);
+						Log.d(TAG,"Waiting for scanning to complete..");
+						
+						if(!UI.is_UI_searching && showing_ScanningDialog)
+						{
+							dismissDialog(Scanning_Dialog);
+							showing_ScanningDialog=false;
+							
+							btFound= UI.bluetooth_manager.connection_manager.getFoundDevices();
+							Intent i=new Intent();
+							i.setAction(SCAN_COMPLETE_INTENT);
+							UI.bluetooth_manager.sendBroadcast(i);
+							break;
+						}
+					}
+					catch(InterruptedException e)
+					{
+						Log.d(TAG,e.getMessage());
+					}
+				}
+			}
+		}.start();
 		
+		UI.bluetooth_manager.connection_manager.is_req_from_gui = true;
+		//pollDevices();
+		
+		setResult(RESULT_CANCELED);
+	}
+	
+	public void pollDevices()
+	{
 		lv = (ListView) findViewById(R.id.paired_devices);
-		bondedDevices = new ArrayAdapter<String>(this, R.layout.device_name);
-		Iterator<Map.Entry<String, String>> devices = btPaired.entrySet().iterator();
+		
+		listOfDevices = new ArrayAdapter<String>(this, R.layout.device_name);
+		
+		lv.setAdapter(listOfDevices);
+		lv.setOnItemClickListener(this);
+		
+		Iterator<Map.Entry<String, String>> devices = btFound.entrySet().iterator();
 		while (devices.hasNext()) {
 			Map.Entry<String, String> device = (Map.Entry<String, String>) devices
 					.next();
-			bondedDevices.add(device.getValue() + "\n" + device.getKey());
+			listOfDevices.add(device.getValue() + "\n" + device.getKey());
 		}
-		lv.setAdapter(bondedDevices);
-		lv.setOnItemClickListener(this);
-		setResult(RESULT_CANCELED);
+		btPaired = UI.bluetooth_manager.connection_manager.getPairedDevices();
+		devices = btPaired.entrySet().iterator();
+		while (devices.hasNext()) {
+			Map.Entry<String, String> device = (Map.Entry<String, String>) devices
+					.next();
+			listOfDevices.add(device.getValue() + "\n" + device.getKey());
+		}
 	}
 
 	@Override
@@ -62,8 +138,6 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 
 	@Override
 	public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
-		
-		Log.d(TAG,"OnItemClick");
 		
 		// Get the device MAC address, which is the last 17 chars in the View
 		String info = ((TextView) v).getText().toString();
@@ -75,5 +149,20 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 		setResult(RESULT_OK, i);
 		finish();
 	}
+
+	@Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case Scanning_Dialog: {
+                ProgressDialog dialog = new ProgressDialog(this);
+                dialog.setTitle("Searching");
+                dialog.setMessage("Please wait while discovering bluetooth devices...");
+                dialog.setIndeterminate(true);
+                dialog.setCancelable(false);
+                return dialog;
+            }
+        }
+        return null;
+    }
 
 }

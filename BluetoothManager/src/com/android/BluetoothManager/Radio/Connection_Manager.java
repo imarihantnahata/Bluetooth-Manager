@@ -31,7 +31,7 @@ import com.android.BluetoothManager.UI.R;
 
 public class Connection_Manager {
 
-	private static final String TAG = "Connection";
+	private static final String TAG = "Connection Manager";
 
 	public static final int MAX_CONNECTIONS_SUPPORTED = 6;
 
@@ -75,7 +75,7 @@ public class Connection_Manager {
 
 	gc_thread maintainence_thread;				//Thread that will do the maintenance
 
-	boolean isSearching = false;
+	public boolean isSearching = false;
 
 	private long lastDiscovery = 0; // Stores the time of the last discovery
 
@@ -125,12 +125,6 @@ public class Connection_Manager {
 				BtFoundDevices.clear();
 				isSearching = true;
 				BtAdapter.startDiscovery();
-				// try {
-				// //Just in case
-				// Thread.sleep(5000);
-				// } catch (InterruptedException e) {
-				// e.printStackTrace();
-				// }
 			} else {
 				Log.d(TAG,
 						"Cancelling discovery because it was done too recently !! ");
@@ -283,9 +277,7 @@ public class Connection_Manager {
 		return BtAdapter;
 	}
 
-	/* Function that will return the devices that are already paired, but not
-	 * necessarily in range
-	 */
+	//Function returning devices that are paired
 	public HashMap<String, String> getPairedDevices() {
 
 		Set<BluetoothDevice> devices = BtAdapter.getBondedDevices();
@@ -294,6 +286,11 @@ public class Connection_Manager {
 		}
 
 		return BtBondedDevices;
+	}
+	
+	//Function returning devices that are found
+	public HashMap<String, String> getFoundDevices() {
+		return BtFoundDevices;
 	}
 
 	/* Function that will make connections to only the devices which are found.
@@ -467,8 +464,8 @@ public class Connection_Manager {
 				server_thread = null;
 				server_isRunning = false;
 				bluetooth_manager.route_table = null;
-				friendServer.interrupt();
-				friendServer = null;
+				//friendServer.interrupt();
+				//friendServer = null;
 				bluetooth_manager.routing_thread.interrupt();
 				bluetooth_manager.routing_thread = null;
 				Log.d(TAG, " ++ Server Stopped ++");
@@ -515,15 +512,6 @@ public class Connection_Manager {
 		Log.d(TAG, "Intent Send from Radio to routing");
 	}
 	
-	public String getNameFromAddress(String address){
-		String name = null;
-		name = BtBondedDevices.get(address);
-		if(name == null){
-			name = BtFoundDevices.get(address);
-		}
-		return name;
-	}
-
 	/*
 	 * FriendServer that listens for friendly connections. This mechanism is
 	 * just used to check if the node is running our application.
@@ -587,7 +575,8 @@ public class Connection_Manager {
 
 				isSearching = false;
 				lastDiscovery = System.currentTimeMillis() / 1000;
-
+				if(is_req_from_gui)
+					bluetooth_manager.ui_handler.obtainMessage(0, "Discovery Finished").sendToTarget();
 				Log.d(TAG, "Service Discovery Finished !");
 				
 				//Discovery is finished, now send all messages waiting to be broadcast

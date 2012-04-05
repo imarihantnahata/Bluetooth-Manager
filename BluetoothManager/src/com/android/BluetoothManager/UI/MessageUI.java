@@ -2,8 +2,6 @@ package com.android.BluetoothManager.UI;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,7 +17,7 @@ public class MessageUI extends BaseActivity {
 	EditText msg_input;
 	int GET_DEVICE_FOR_MSG = 0;
 	final String MSG_TYPE = "msg";
-	BluetoothManagerApplication bluetooth_manager;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +28,6 @@ public class MessageUI extends BaseActivity {
 
 		bluetooth_manager = (BluetoothManagerApplication) getApplication();
 
-		bluetooth_manager.ui_handler = this.ui_handler;
 	}
 
 	public void sendMsg(View v) {
@@ -65,12 +62,5 @@ public class MessageUI extends BaseActivity {
 		super.onStop();
 	}
 	
-	public final Handler ui_handler = new Handler(){
-
-		@Override
-		public void handleMessage(Message msg) {
-			Toast.makeText(bluetooth_manager, (String)msg.obj, Toast.LENGTH_LONG).show();
-		}
-		
-	};
+	
 }

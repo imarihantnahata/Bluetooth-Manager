@@ -47,6 +47,7 @@
         android:layout_height="wrap_content"
         android:stackFromBottom="true"
     />
+     
     <Button android:id="@+id/button_scan"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
