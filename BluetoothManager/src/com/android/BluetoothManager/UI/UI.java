@@ -8,7 +8,6 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.TabHost;
 import android.widget.Toast;
 
@@ -16,11 +15,6 @@ public class UI extends TabActivity {
 
 	//application object reference to be used throughout the UI
 	static BluetoothManagerApplication bluetooth_manager;
-	
-	private final String TAG = "UI";
-	
-	//integer indicating scanning for devices complete
-	private final int SCAN_COMPLETE=0;
 	
 	//static variable indicating if DeviceListActivity is Searching
 	static boolean is_UI_searching;
@@ -70,10 +64,7 @@ public class UI extends TabActivity {
 		public void handleMessage(Message msg) {
 			switch(msg.what)
 			{
-				case SCAN_COMPLETE:
-					is_UI_searching=false;
-					Log.d(TAG,"Reveiced message for scan complete");
-					
+				
 				default:
 					Toast.makeText(bluetooth_manager, (String)msg.obj, Toast.LENGTH_LONG).show();
 			}

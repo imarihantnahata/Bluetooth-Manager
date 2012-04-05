@@ -575,8 +575,8 @@ public class Connection_Manager {
 
 				isSearching = false;
 				lastDiscovery = System.currentTimeMillis() / 1000;
-				if(is_req_from_gui)
-					bluetooth_manager.ui_handler.obtainMessage(0, "Discovery Finished").sendToTarget();
+				Intent discoveryFinished= new Intent(bluetooth_manager.getResources().getString(R.string.SCAN_COMPLETE));
+				bluetooth_manager.sendBroadcast(discoveryFinished);
 				Log.d(TAG, "Service Discovery Finished !");
 				
 				//Discovery is finished, now send all messages waiting to be broadcast

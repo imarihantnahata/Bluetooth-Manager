@@ -23,8 +23,6 @@ import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 
 public class DeviceListActivity extends BaseActivity implements OnItemClickListener {
 	private static final String TAG = "DeviceListActivity";
-	private static final String SCAN_COMPLETE_INTENT="Scan Complete";
-	
 	
 	ListView lv;
 
@@ -44,9 +42,10 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 	BroadcastReceiver receiver= new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if(intent.getAction().equals(SCAN_COMPLETE_INTENT))
+			if(intent.getAction().equals(getResources().getString(R.string.SCAN_COMPLETE)))
 			{
 				Log.d(TAG,"Received Scan Complete Intent");
+				dismissDialog(Scanning_Dialog);
 				pollDevices();
 			}
 		}
@@ -57,9 +56,8 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.device_list);
 		
-		registerReceiver(receiver, new IntentFilter(SCAN_COMPLETE_INTENT));
-		
-		
+		registerReceiver(receiver, new IntentFilter(getResources().getString(R.string.SCAN_COMPLETE)));
+				
 		UI.bluetooth_manager.connection_manager.startDiscovery();
 		UI.is_UI_searching=true;
 		
@@ -68,45 +66,12 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 		
 		bluetooth_manager = (BluetoothManagerApplication) getApplication();
 		Log.d(TAG,"Calling startDiscovery from DeviceListActivity");
-		
-		/* Thread which checks if the scanning UI has requested (DeviceListActivity) 
-		 * has been completed. If yes, it dismisses the waiting dialog and returns
-		 */
-		new Thread(){
-			public void run()
-			{
-				while(true)
-				{
-					try{
-						Thread.sleep(750);
-						Log.d(TAG,"Waiting for scanning to complete..");
-						
-						if(!UI.is_UI_searching && showing_ScanningDialog)
-						{
-							dismissDialog(Scanning_Dialog);
-							showing_ScanningDialog=false;
-							
-							btFound= UI.bluetooth_manager.connection_manager.getFoundDevices();
-							Intent i=new Intent();
-							i.setAction(SCAN_COMPLETE_INTENT);
-							UI.bluetooth_manager.sendBroadcast(i);
-							break;
-						}
-					}
-					catch(InterruptedException e)
-					{
-						Log.d(TAG,e.getMessage());
-					}
-				}
-			}
-		}.start();
-		
 		UI.bluetooth_manager.connection_manager.is_req_from_gui = true;
-		//pollDevices();
-		
+				
 		setResult(RESULT_CANCELED);
 	}
 	
+	// Will receive the devices in btPaired and btFound and add them to UI
 	public void pollDevices()
 	{
 		lv = (ListView) findViewById(R.id.paired_devices);
@@ -115,6 +80,9 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 		
 		lv.setAdapter(listOfDevices);
 		lv.setOnItemClickListener(this);
+		btFound=UI.bluetooth_manager.connection_manager.getFoundDevices();
+		btPaired=UI.bluetooth_manager.connection_manager.getPairedDevices();
+		
 		
 		Iterator<Map.Entry<String, String>> devices = btFound.entrySet().iterator();
 		while (devices.hasNext()) {
