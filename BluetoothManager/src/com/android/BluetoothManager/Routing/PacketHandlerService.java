@@ -2,10 +2,8 @@ package com.android.BluetoothManager.Routing;
 
 import java.util.Iterator;
 
-import android.bluetooth.BluetoothAdapter;
 import android.util.Log;
 
-import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 import com.android.BluetoothManager.Routing.Packet_types.DataPacket;
 import com.android.BluetoothManager.Routing.Packet_types.RadioPacket;
 import com.android.BluetoothManager.Routing.Packet_types.Route_Message;

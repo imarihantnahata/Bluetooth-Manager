@@ -123,6 +123,5 @@ public class BluetoothManagerApplication extends Application {
 		intent.putExtra("msg", msg);
 		Log.d(TAG, "Sending msg to Routing from UI :" + msg);
 		sendBroadcast(intent);
-
 	}
 }

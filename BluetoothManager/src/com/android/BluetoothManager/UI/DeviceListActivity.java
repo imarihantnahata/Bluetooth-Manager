@@ -102,6 +102,7 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		unregisterReceiver(receiver);
 	}
 
 	@Override
