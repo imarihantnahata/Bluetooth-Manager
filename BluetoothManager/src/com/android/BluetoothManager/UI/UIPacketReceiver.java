@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -101,6 +102,7 @@ public class UIPacketReceiver extends BroadcastReceiver {
 		{
 			Log.d(TAG,e.getMessage());
 		}
+		setNotificationForMsg("File Received from: "+src_name, filename, "Saved in /sdcard/bluetooth");
 		
 	}
 
