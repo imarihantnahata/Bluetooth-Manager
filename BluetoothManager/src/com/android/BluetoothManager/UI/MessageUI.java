@@ -18,16 +18,13 @@ public class MessageUI extends BaseActivity {
 	int GET_DEVICE_FOR_MSG = 0;
 	final String MSG_TYPE = "msg";
 	
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.message_ui);
 		msg_send = (Button) findViewById(R.id.msg_button_send);
 		msg_input = (EditText) findViewById(R.id.msg_text_input);
-
 		bluetooth_manager = (BluetoothManagerApplication) getApplication();
-
 	}
 
 	public void sendMsg(View v) {
