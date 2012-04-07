@@ -13,11 +13,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import com.android.BluetoothManager.Application.R;
 
 public class FTPUI extends ListActivity {
@@ -32,6 +34,7 @@ public class FTPUI extends ListActivity {
 	private List<String> directoryEntries = new ArrayList<String>();
 	private File currentDirectory = new File("/");
 	private final String TAG = "FileTransferUI";
+	private int MAX_FILE_SIZE = 512; // in KiloBytes.
 	final String MSG_TYPE = "file";
 	File fileToSend;
 
@@ -42,6 +45,7 @@ public class FTPUI extends ListActivity {
 		// setContentView() gets called within the next line,
 		// so we do not need it here.
 		browseToRoot();
+		Log.d(TAG, "Environment: " + Environment.getExternalStorageDirectory());
 	}
 
 	/**
@@ -69,7 +73,16 @@ public class FTPUI extends ListActivity {
 				// @Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					fileToSend = aDirectory;
-					startActivityForResult(new Intent(getApplicationContext(),DeviceListActivity.class), GET_DEVICE_TO_SEND);
+					long length = new File(fileToSend.getPath()).length();
+					Log.d(TAG,"Length of file: "+length);
+					if (length > MAX_FILE_SIZE * 1000) {
+						Toast.makeText(getApplicationContext(),
+								"File should not be greater then 512KB.",
+								Toast.LENGTH_LONG).show();
+						return;
+					}
+					startActivityForResult(new Intent(getApplicationContext(),
+							DeviceListActivity.class), GET_DEVICE_TO_SEND);
 				}
 			};
 			OnClickListener cancelButtonListener = new OnClickListener() {
@@ -158,22 +171,24 @@ public class FTPUI extends ListActivity {
 		if (requestCode == GET_DEVICE_TO_SEND && resultCode == RESULT_OK) {
 			String device = data
 					.getStringExtra(DeviceListActivity.DEVICE_ADDRESS);
-			String msg = "file,"+fileToSend.getName()+","+readFileAsString(fileToSend.getPath());
+			String msg = "file," + fileToSend.getName() + ","
+					+ readFileAsString(fileToSend.getPath());
 			Toast.makeText(this, device, Toast.LENGTH_SHORT).show();
 			UI.bluetooth_manager.sendDataToRoutingFromUI(device, msg, MSG_TYPE);
 		}
 	}
 
-	private String readFileAsString(String filePath)
-	{
-		byte [] buffer=new byte[(int) new File(filePath).length()];;
-		try{
-			BufferedInputStream f = new BufferedInputStream(new FileInputStream(filePath));
-		    f.read(buffer);		    
-		}
-		catch(IOException e)
-		{
-			Log.d(TAG,e.getMessage());
+	private String readFileAsString(String filePath) {
+		long fileLength = new File(filePath).length();
+		Log.d(TAG, "Size of File Selected: " + fileLength);
+		byte[] buffer = new byte[(int) new File(filePath).length()];
+		;
+		try {
+			BufferedInputStream f = new BufferedInputStream(
+					new FileInputStream(filePath));
+			f.read(buffer);
+		} catch (IOException e) {
+			Log.d(TAG, e.getMessage());
 		}
 		return new String(buffer);
 	}
