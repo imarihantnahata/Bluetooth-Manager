@@ -128,6 +128,8 @@ public class Connection_Manager {
 			} else {
 				Log.d(TAG,
 						"Cancelling discovery because it was done too recently !! ");
+				Intent discoveryFinished= new Intent(bluetooth_manager.getResources().getString(R.string.DISCOVERY_COMPLETE));
+				bluetooth_manager.sendBroadcast(discoveryFinished);
 				dispatchBroadcastQueue();
 			}
 
@@ -655,7 +657,7 @@ public class Connection_Manager {
 
 		public BtStreamWatcher(String deviceAddress) {
 			address = deviceAddress;
-			TAG="StreamWatcher for "+address;
+			TAG="StreamWatcher";
 		}
 
 		public void run() {
@@ -692,7 +694,10 @@ public class Connection_Manager {
 						"IOException in BtStreamWatcher - probably caused by normal disconnection",
 						e);
 				Log.d(TAG, "Closing Thread since probably disconnected");
-
+			}
+			catch(Exception e)
+			{
+				Log.d(TAG,e.getMessage());
 			}
 			// Getting out of the while loop means the connection is dead.
 			try {

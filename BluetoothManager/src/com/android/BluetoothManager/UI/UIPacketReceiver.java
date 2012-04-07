@@ -86,11 +86,11 @@ public class UIPacketReceiver extends BroadcastReceiver {
 	// Creates the received file in the /sdcard/bluetooth directory
 	private void processFileData(String device, String src_name,
 			String msg) {
-		String filename=msg.substring(0,msg.indexOf(',')-1);
+		String filename=msg.substring(0,msg.indexOf(','));
 		String fileData=msg.substring(msg.indexOf(',')+1);
 		try{
 			File f;
-			f=new File("/sdcard/bluetooth/"+filename);
+			f=new File("/sdcard/"+filename);
 			if(!f.exists())
 			  f.createNewFile();
 			else

@@ -76,7 +76,7 @@ public class ChatUI extends BaseActivity {
 			currentAdapter = bluetooth_manager.ui_packet_receiver.adapter.getChatAdapter(0);
 			currentDevice = bluetooth_manager.ui_packet_receiver.adapter.getDevice(0);
 		}
-		String msg = chat_edit_text.getText()+"";
+		String msg = "chat,"+chat_edit_text.getText()+"";
 		currentAdapter.add("me: "+msg);
 		bluetooth_manager.sendDataToRoutingFromUI(currentDevice, msg, CHAT_TYPE );
 	}

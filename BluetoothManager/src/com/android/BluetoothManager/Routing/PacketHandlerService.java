@@ -81,7 +81,7 @@ public class PacketHandlerService extends Thread {
 	 * flag as true.
 	 */
 	void processUIPacket(UIPacket ui_packet) {
-		if ((System.currentTimeMillis() / 1000 - ui_packet.getTimestamp()) > 60) {
+		if ((System.currentTimeMillis() / 1000 - ui_packet.getTimestamp()) > 150) {
 			RoutingPacketReceiver.objectsFromUI.remove(ui_packet);
 		} else {
 			Log.d(TAG,
