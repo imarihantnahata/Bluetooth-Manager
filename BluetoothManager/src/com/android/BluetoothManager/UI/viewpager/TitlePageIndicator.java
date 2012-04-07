@@ -38,7 +38,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.android.BluetoothManager.UI.R;
+import com.android.BluetoothManager.Application.R;
 
 /**
  * A TitlePageIndicator is a PageIndicator which displays the title of left view

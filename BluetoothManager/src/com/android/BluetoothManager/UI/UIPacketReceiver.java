@@ -18,6 +18,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
+import com.android.BluetoothManager.Application.R;
 import com.android.BluetoothManager.UI.viewpager.TitlePageIndicator;
 
 public class UIPacketReceiver extends BroadcastReceiver {
@@ -89,7 +90,7 @@ public class UIPacketReceiver extends BroadcastReceiver {
 		String fileData=msg.substring(msg.indexOf(',')+1);
 		try{
 			File f;
-			f=new File("/sdcard/bluetooth"+filename);
+			f=new File("/sdcard/bluetooth/"+filename);
 			if(!f.exists())
 			  f.createNewFile();
 			else

@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
+import com.android.BluetoothManager.Application.R;
 import com.android.BluetoothManager.UI.viewpager.TitlePageIndicator;
 
 public class ChatUI extends BaseActivity {

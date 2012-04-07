@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.android.BluetoothManager.Application.R;
 
 public class FTPUI extends ListActivity {
 

@@ -14,7 +14,7 @@ import com.android.BluetoothManager.Radio.RadioPacketReceiver;
 import com.android.BluetoothManager.Routing.PacketHandlerService;
 import com.android.BluetoothManager.Routing.RouteTable;
 import com.android.BluetoothManager.Routing.RoutingPacketReceiver;
-import com.android.BluetoothManager.UI.R;
+import com.android.BluetoothManager.Application.R;
 import com.android.BluetoothManager.UI.UIPacketReceiver;
 
 /* Context used for access to objects across application.

@@ -27,7 +27,7 @@ import android.util.Log;
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 import com.android.BluetoothManager.Routing.PacketHandlerService;
 import com.android.BluetoothManager.Routing.RouteTable;
-import com.android.BluetoothManager.UI.R;
+import com.android.BluetoothManager.Application.R;
 
 public class Connection_Manager {
 

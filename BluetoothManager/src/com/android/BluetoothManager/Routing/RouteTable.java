@@ -11,7 +11,7 @@ import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 import com.android.BluetoothManager.Routing.Packet_types.DataPacket;
 import com.android.BluetoothManager.Routing.Packet_types.Route_Error;
 import com.android.BluetoothManager.Routing.Packet_types.Route_Message;
-import com.android.BluetoothManager.UI.R;
+import com.android.BluetoothManager.Application.R;
 
 public class RouteTable {
 

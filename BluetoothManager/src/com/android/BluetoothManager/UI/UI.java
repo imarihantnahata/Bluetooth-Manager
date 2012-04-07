@@ -1,6 +1,7 @@
 package com.android.BluetoothManager.UI;
 
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
+import com.android.BluetoothManager.Application.R;
 
 import android.app.TabActivity;
 import android.content.Intent;

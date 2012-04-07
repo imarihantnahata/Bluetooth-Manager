@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
+import com.android.BluetoothManager.Application.R;
 
 public class DeviceListActivity extends BaseActivity implements OnItemClickListener {
 	private static final String TAG = "DeviceListActivity";

@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
+import com.android.BluetoothManager.Application.R;
 
 public class MessageUI extends BaseActivity {
 
