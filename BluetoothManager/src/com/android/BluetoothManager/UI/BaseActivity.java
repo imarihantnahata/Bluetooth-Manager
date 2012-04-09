@@ -1,6 +1,7 @@
 package com.android.BluetoothManager.UI;
 
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
+import com.android.BluetoothManager.Application.R;
 import com.android.BluetoothManager.UI.viewpager.TitlePageIndicator;
 
 import android.app.Activity;

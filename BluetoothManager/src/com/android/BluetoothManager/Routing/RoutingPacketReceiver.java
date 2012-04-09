@@ -12,7 +12,7 @@ import android.util.Log;
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 import com.android.BluetoothManager.Routing.Packet_types.RadioPacket;
 import com.android.BluetoothManager.Routing.Packet_types.UIPacket;
-import com.android.BluetoothManager.UI.R;
+import com.android.BluetoothManager.Application.R;
 
 /* 
  * Class that will receive packets, distinguish their type

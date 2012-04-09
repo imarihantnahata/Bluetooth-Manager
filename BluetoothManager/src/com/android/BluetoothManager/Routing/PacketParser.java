@@ -62,7 +62,7 @@ public class PacketParser {
 		
 		String data="";
 		//Loop through rest of the packets. The data also might contain a comma.
-		for(int i=2;i<packet_fields.length;i++){
+		for(int i=3;i<packet_fields.length;i++){
 			data+=packet_fields[i]+",";
 		}
 		DataPacket data_packet= new DataPacket(dest_addr, src_name, data);

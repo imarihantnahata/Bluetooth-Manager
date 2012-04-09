@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.android.BluetoothManager.Application.R;
 import com.android.BluetoothManager.UI.viewpager.TitleProvider;
 
 public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {

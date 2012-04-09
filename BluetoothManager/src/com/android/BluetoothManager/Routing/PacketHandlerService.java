@@ -2,10 +2,8 @@ package com.android.BluetoothManager.Routing;
 
 import java.util.Iterator;
 
-import android.bluetooth.BluetoothAdapter;
 import android.util.Log;
 
-import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 import com.android.BluetoothManager.Routing.Packet_types.DataPacket;
 import com.android.BluetoothManager.Routing.Packet_types.RadioPacket;
 import com.android.BluetoothManager.Routing.Packet_types.Route_Message;
@@ -83,9 +81,8 @@ public class PacketHandlerService extends Thread {
 	 * flag as true.
 	 */
 	void processUIPacket(UIPacket ui_packet) {
-		if ((System.currentTimeMillis() / 1000 - ui_packet.getTimestamp()) > 60) {
+		if ((System.currentTimeMillis() / 1000 - ui_packet.getTimestamp()) > 150) {
 			RoutingPacketReceiver.objectsFromUI.remove(ui_packet);
-			// TODO notify UI could not send
 		} else {
 			Log.d(TAG,
 					"Difference: "

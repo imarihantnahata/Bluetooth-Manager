@@ -1,5 +1,8 @@
 package com.android.BluetoothManager.UI;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 
 import android.app.Notification;
@@ -9,11 +12,13 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
+import com.android.BluetoothManager.Application.R;
 import com.android.BluetoothManager.UI.viewpager.TitlePageIndicator;
 
 public class UIPacketReceiver extends BroadcastReceiver {
@@ -26,6 +31,7 @@ public class UIPacketReceiver extends BroadcastReceiver {
 	// These fields define the type of packet at the UI level.
 	private String MSG_TYPE = "msg";
 	private String CHAT_TYPE = "chat";
+	private String FILE_TYPE= "file";
 
 	private int NOTIFICATION_ID = 1;
 
@@ -54,28 +60,51 @@ public class UIPacketReceiver extends BroadcastReceiver {
 
 		String device = intent.getStringExtra("device");
 		String msg = intent.getStringExtra("msg");
-		String name = bluetooth_manager.connection_manager.getNameFromAddress(device);
+		String src_name = intent.getStringExtra("src_name");
+		
 		adapter.printContents(adapter.deviceNames);
 		adapter.printContents(adapter.deviceAddresses);
 		Log.d(TAG, "Received msg:" + msg + " from:" + device);
 
-		String src_name=msg.substring(0,msg.indexOf(','));
-		
-		msg=msg.substring(msg.indexOf(',')+1);
-		
 		// Find the type of packet received. i.e. chat or msg
 		String dataType = msg.substring(0, msg.indexOf(","));
 		
 		// Process the packet according to the type.
 		if (dataType.equals(MSG_TYPE)) {
 			processMsgData(device, src_name, msg.substring(msg.indexOf(",") + 1));
-			return;
 		}
-		if (dataType.equals(CHAT_TYPE)) {
+		else if (dataType.equals(CHAT_TYPE)) {
 			processChatData(device, src_name, msg.substring(msg.indexOf(",") + 1));
-			return;
 		}
-
+		else if(dataType.equals(FILE_TYPE))
+		{
+			processFileData(device, src_name, msg.substring(msg.indexOf(",") + 1));
+		}
+		return;
+	}
+	
+	// Creates the received file in the /sdcard/bluetooth directory
+	private void processFileData(String device, String src_name,
+			String msg) {
+		String filename=msg.substring(0,msg.indexOf(','));
+		String fileData=msg.substring(msg.indexOf(',')+1);
+		try{
+			File f;
+			f=new File("/sdcard/"+filename);
+			if(!f.exists())
+			  f.createNewFile();
+			else
+				return;
+			FileWriter fw=new FileWriter(f);
+			fw.write(fileData);
+			fw.close();		
+		}
+		catch(IOException e)
+		{
+			Log.d(TAG,e.getMessage());
+		}
+		setNotificationForMsg("File Received from: "+src_name, filename, "Saved in /sdcard/bluetooth");
+		
 	}
 
 	/* Checks if it a new chat or continuation of the old chat.

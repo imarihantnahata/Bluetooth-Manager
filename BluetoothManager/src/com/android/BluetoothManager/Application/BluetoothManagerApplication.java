@@ -14,7 +14,7 @@ import com.android.BluetoothManager.Radio.RadioPacketReceiver;
 import com.android.BluetoothManager.Routing.PacketHandlerService;
 import com.android.BluetoothManager.Routing.RouteTable;
 import com.android.BluetoothManager.Routing.RoutingPacketReceiver;
-import com.android.BluetoothManager.UI.R;
+import com.android.BluetoothManager.Application.R;
 import com.android.BluetoothManager.UI.UIPacketReceiver;
 
 /* Context used for access to objects across application.
@@ -104,7 +104,7 @@ public class BluetoothManagerApplication extends Application {
 
 	public String getSelfAddress() {
 		try {
-			return connection_manager.getAddress();
+			return connection_manager.getSelfAddress();
 		} catch (RemoteException e) {
 			Log.d(TAG, " ++ Unable to retrieve selfAddress");
 		}
@@ -123,6 +123,5 @@ public class BluetoothManagerApplication extends Application {
 		intent.putExtra("msg", msg);
 		Log.d(TAG, "Sending msg to Routing from UI :" + msg);
 		sendBroadcast(intent);
-
 	}
 }
