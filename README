@@ -1,0 +1,5 @@
+This application is an Android Bluetooth utility application. The user can send and receive messages,small text files and 
+chat with other Bluetooth enabled Android devices running the app. 
+
+The application will try to send data to the destination device even if it is not available within its reach by a reactive 
+routing protocol (based on the DYMO protocol). A connection with multiple hops is established if the topology is available.

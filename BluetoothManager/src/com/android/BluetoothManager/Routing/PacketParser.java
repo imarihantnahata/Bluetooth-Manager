@@ -63,8 +63,9 @@ public class PacketParser {
 		String data="";
 		//Loop through rest of the packets. The data also might contain a comma.
 		for(int i=3;i<packet_fields.length;i++){
-			//if(i != packet_fields.length-1) // avoid comma at the end of the msg.
-				data+=packet_fields[i]+",";
+			data+=packet_fields[i];
+			if(i != packet_fields.length-1) // avoid comma at the end of the msg.
+				data+=",";
 		}
 		DataPacket data_packet= new DataPacket(dest_addr, src_name, data);
 		return RouteTable.bluetooth_manager.route_table.processData(device, data_packet);
