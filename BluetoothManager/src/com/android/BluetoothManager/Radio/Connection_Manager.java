@@ -700,14 +700,11 @@ public class Connection_Manager {
 				Log.d(TAG,e.getMessage());
 			}
 			// Getting out of the while loop means the connection is dead.
-			try {
+			finally {
 				BtConnectedDeviceAddresses.remove(address);
 				BtSockets.remove(address);
 				BtStreamWatcherThreads.remove(address);
 
-			} catch (Exception e) {
-				Log.e(TAG, "Exception in BtStreamWatcher while disconnecting",
-						e);
 			}
 		}
 	}
@@ -755,8 +752,6 @@ public class Connection_Manager {
 										.getValue();
 								BluetoothSocket myBtSocket = BtSockets
 										.get(address);
-								myBtSocket.getInputStream().close();
-								myBtSocket.getOutputStream().close();
 								myBtSocket.close();
 								it.remove();
 								listener.interrupt();

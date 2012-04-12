@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 import com.android.BluetoothManager.Application.R;
 
 public class FTPUI extends ListActivity {
@@ -35,6 +36,7 @@ public class FTPUI extends ListActivity {
 	private File currentDirectory = new File("/");
 	private final String TAG = "FileTransferUI";
 	private int MAX_FILE_SIZE = 512; // in KiloBytes.
+	private BluetoothManagerApplication bluetooth_manager;
 	final String MSG_TYPE = "file";
 	File fileToSend;
 
@@ -101,6 +103,8 @@ public class FTPUI extends ListActivity {
 					.setNegativeButton("Cancel", cancelButtonListener).show();
 		}
 	}
+	
+	
 
 	private void fill(File[] files) {
 		this.directoryEntries.clear();
@@ -191,5 +195,17 @@ public class FTPUI extends ListActivity {
 			Log.d(TAG, e.getMessage());
 		}
 		return new String(buffer);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		bluetooth_manager.app_in_foreground = false;
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		bluetooth_manager.app_in_foreground = true;
 	}
 }

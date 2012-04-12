@@ -136,7 +136,11 @@ public class UIPacketReceiver extends BroadcastReceiver {
 	private void processMsgData(String device, String name, String msg) {
 		Log.d(TAG,"Message received to UI"+msg);
 		addMsgToInbox(name, msg);
+		
 		setNotificationForMsg("New message from: " + name, name, msg);
+		String notify=name+" \n"+msg;
+		MessageUI.msg_array.add(notify);
+		
 	}
 
 	private void addMsgToInbox(String name, String msg) {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -22,7 +23,7 @@ import android.widget.TextView;
 import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 import com.android.BluetoothManager.Application.R;
 
-public class DeviceListActivity extends BaseActivity implements OnItemClickListener {
+public class DeviceListActivity extends Activity implements OnItemClickListener {
 	private static final String TAG = "DeviceListActivity";
 	
 	ListView lv;
@@ -108,6 +109,7 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 		unregisterReceiver(receiver);
 	}
 
+	
 	@Override
 	public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
 		

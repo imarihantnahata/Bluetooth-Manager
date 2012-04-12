@@ -121,7 +121,7 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 		Log.d(TAG, " +++ startUpdate Called");
 	}
 
-	public void printContents(ArrayList list)
+	public void printContents(ArrayList<String> list)
 	{
 		Log.d(TAG,"Printing content of size :"+ list.size());
 		Iterator<String> itr=list.iterator();

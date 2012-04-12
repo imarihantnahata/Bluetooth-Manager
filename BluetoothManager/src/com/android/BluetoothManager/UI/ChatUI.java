@@ -1,5 +1,6 @@
 package com.android.BluetoothManager.UI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -16,7 +17,9 @@ import com.android.BluetoothManager.Application.BluetoothManagerApplication;
 import com.android.BluetoothManager.Application.R;
 import com.android.BluetoothManager.UI.viewpager.TitlePageIndicator;
 
-public class ChatUI extends BaseActivity {
+public class ChatUI extends Activity {
+
+	
 
 	private final String TAG = "ChatUI";
 	
@@ -93,6 +96,8 @@ public class ChatUI extends BaseActivity {
 		currentAdapter.add("me: "+msg);
 		msg = "chat,"+msg;
 		bluetooth_manager.sendDataToRoutingFromUI(currentDevice, msg, CHAT_TYPE );
+		chat_edit_text.setText("");
+		chat_edit_text.clearFocus();
 	}
 	
 	@Override
@@ -138,6 +143,18 @@ public class ChatUI extends BaseActivity {
 		}
 	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+		bluetooth_manager.app_in_foreground = false;
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		bluetooth_manager.app_in_foreground = true;
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
