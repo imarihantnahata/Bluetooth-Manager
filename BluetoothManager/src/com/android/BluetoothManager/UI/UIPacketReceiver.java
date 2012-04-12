@@ -12,7 +12,6 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -123,6 +122,12 @@ public class UIPacketReceiver extends BroadcastReceiver {
 			adapter.addDevice(device, name, msg);
 			adapter.notifyDataSetChanged();
 		}
+		
+		if(ChatUI.chat_edit_text != null && adapter.deviceNames.size() ==1)
+		{
+			ChatUI.makeChatComponentsVisible();
+		}
+		
 		
 	}
 	/* After receiving the MSG packet, it is added to in box and a 

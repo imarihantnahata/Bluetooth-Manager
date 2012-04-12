@@ -19,6 +19,8 @@ public class MessageUI extends BaseActivity {
 	int GET_DEVICE_FOR_MSG = 0;
 	final String MSG_TYPE = "msg";
 	
+	BluetoothManagerApplication bluetooth_manager;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

@@ -40,6 +40,8 @@ public class DeviceListActivity extends BaseActivity implements OnItemClickListe
 	public static final int Scanning_Dialog=0;
 	boolean showing_ScanningDialog=false;
 	
+	BluetoothManagerApplication bluetooth_manager;
+	
 	BroadcastReceiver receiver= new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
