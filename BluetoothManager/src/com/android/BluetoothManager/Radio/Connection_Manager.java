@@ -736,7 +736,7 @@ public class Connection_Manager {
 
 					Log.d(TAG, "Connections are :" + getConnections());
 					it = BtStreamWatcherThreads.entrySet().iterator();
-					Log.d(TAG, "Doing Maintainence");
+					Log.d(TAG, "Maintenance Thread");
 					try {
 						while (it.hasNext()) {
 							Map.Entry<String, BtStreamWatcher> pairs = (Map.Entry<String, BtStreamWatcher>) it
