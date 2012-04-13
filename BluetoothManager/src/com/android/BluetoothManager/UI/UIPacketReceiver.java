@@ -57,7 +57,7 @@ public class UIPacketReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 
-		String device = intent.getStringExtra("device");
+		String device = intent.getStringExtra("src_addr");
 		String msg = intent.getStringExtra("msg");
 		String src_name = intent.getStringExtra("src_name");
 		
@@ -102,7 +102,7 @@ public class UIPacketReceiver extends BroadcastReceiver {
 		{
 			Log.d(TAG,e.getMessage());
 		}
-		setNotificationForMsg("File Received from: "+src_name, filename, "Saved in /sdcard/bluetooth");
+		setNotificationForMsg("File Received from: "+src_name, filename, "Saved in /sdcard/");
 		
 	}
 

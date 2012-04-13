@@ -58,16 +58,18 @@ public class PacketParser {
 		
 		String packet_fields[] = msg.split(",");
 		String dest_addr=packet_fields[1];
-		String src_name=packet_fields[2];
+		String src_addr = packet_fields[2];
+		String src_name=packet_fields[3];
 		
 		String data="";
 		//Loop through rest of the packets. The data also might contain a comma.
-		for(int i=3;i<packet_fields.length;i++){
+		for(int i=4;i<packet_fields.length;i++){
 			data+=packet_fields[i];
 			if(i != packet_fields.length-1) // avoid comma at the end of the msg.
 				data+=",";
 		}
-		DataPacket data_packet= new DataPacket(dest_addr, src_name, data);
+		Log.d(TAG,"Msg in Packet Parser:"+data);
+		DataPacket data_packet= new DataPacket(dest_addr, src_addr, src_name, data);
 		return RouteTable.bluetooth_manager.route_table.processData(device, data_packet);
 	}
 }

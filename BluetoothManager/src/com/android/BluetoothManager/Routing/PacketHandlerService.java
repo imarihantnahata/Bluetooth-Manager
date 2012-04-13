@@ -2,6 +2,7 @@ package com.android.BluetoothManager.Routing;
 
 import java.util.Iterator;
 
+import android.os.RemoteException;
 import android.util.Log;
 
 import com.android.BluetoothManager.Routing.Packet_types.DataPacket;
@@ -34,15 +35,14 @@ public class PacketHandlerService extends Thread {
 		UIPacket temp_UI;
 		RadioPacket temp_radio;
 		try {
-		
-			
-			//Log.d(TAG, "ConnectionObject :"+RouteTable.bluetooth_manager.connection.toString());
+
+			// Log.d(TAG,
+			// "ConnectionObject :"+RouteTable.bluetooth_manager.connection.toString());
 			while (true) {
 				Log.d(TAG, "Looping through the iterators");
 				RoutingPacketReceiver.printQueues();
-				
-				synchronized(RoutingPacketReceiver.objectsFromUI)
-				{
+
+				synchronized (RoutingPacketReceiver.objectsFromUI) {
 					itr_UI = RoutingPacketReceiver.objectsFromUI.iterator();
 					for (; itr_UI.hasNext();) {
 						temp_UI = itr_UI.next();
@@ -50,26 +50,22 @@ public class PacketHandlerService extends Thread {
 					}
 				}
 
-				
-				synchronized(RoutingPacketReceiver.objectsFromRadio)
-				{
-					itr_radio = RoutingPacketReceiver.objectsFromRadio.iterator();
+				synchronized (RoutingPacketReceiver.objectsFromRadio) {
+					itr_radio = RoutingPacketReceiver.objectsFromRadio
+							.iterator();
 					for (; itr_radio.hasNext();) {
 						temp_radio = itr_radio.next();
 						this.processRadioPacket(temp_radio);
 					}
 
 				}
-				
+
 				Thread.sleep(2000);
 			}
-		} 
-		catch(InterruptedException e)
-		{
-			Log.d(TAG,"Interrupted, exiting from loop");
+		} catch (InterruptedException e) {
+			Log.d(TAG, "Interrupted, exiting from loop");
 			return;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -91,13 +87,20 @@ public class PacketHandlerService extends Thread {
 			Route gotRoute = RouteTable.bluetooth_manager.route_table
 					.getRouteToDest(ui_packet.getDeviceToSend());
 			if (gotRoute != null) {
-				DataPacket data_packet = new DataPacket(
-						ui_packet.getDeviceToSend(),
-						RouteTable.bluetooth_manager.connection_manager.getSelfName(),
-						ui_packet.getMsg());
+				DataPacket data_packet = null;
+				try {
+					data_packet = new DataPacket(
+							ui_packet.getDeviceToSend(),RouteTable.bluetooth_manager.connection_manager
+							.getSelfAddress(),
+							RouteTable.bluetooth_manager.connection_manager
+									.getSelfName()
+							, ui_packet.getMsg());
+				} catch (RemoteException e) {
+					Log.d(TAG,"Exception in getSelfAddress()");
+				}
 				RouteTable.bluetooth_manager.route_table.forwardMessage(
 						gotRoute.getNext_hop(), data_packet.toString());
-				
+
 				Log.d(TAG,
 						"Route found, sending message:"
 								+ data_packet.toString() + " to "

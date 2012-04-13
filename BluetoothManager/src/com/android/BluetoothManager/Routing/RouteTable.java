@@ -170,7 +170,7 @@ public class RouteTable {
 			String ACTION = bluetooth_manager.getResources().getString(
 					R.string.ROUTING_TO_UI);
 			Intent i = new Intent();
-			i.putExtra("device", device);
+			i.putExtra("src_addr", data_packet.getSrc_addr());
 			i.putExtra("msg", data_packet.getMsg());
 			i.putExtra("src_name", data_packet.getSrc_Name());
 			i.setAction(ACTION);

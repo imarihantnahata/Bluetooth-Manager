@@ -46,7 +46,6 @@ public class BluetoothManagerApplication extends Application {
 
 	public Handler ui_handler;
 	
-	public boolean app_in_foreground = true; 
 	
 	@Override
 	public void onCreate() {

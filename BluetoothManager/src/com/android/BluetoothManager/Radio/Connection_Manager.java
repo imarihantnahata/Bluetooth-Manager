@@ -753,7 +753,8 @@ public class Connection_Manager {
 								BluetoothSocket myBtSocket = BtSockets
 										.get(address);
 								myBtSocket.close();
-								it.remove();
+								
+								BtStreamWatcherThreads.remove(address);
 								listener.interrupt();
 								listener = null;
 								BtSockets.remove(address);
@@ -763,7 +764,7 @@ public class Connection_Manager {
 										.removeRouteToDest(address);
 							}
 						}
-						Thread.sleep(30000);
+						Thread.sleep(10000);
 					} catch (IOException e) {
 						Log.d(TAG, "Failed to close socket" + e.getMessage());
 					} catch (InterruptedException e) {

@@ -67,7 +67,7 @@ public class UI extends TabActivity {
 			{
 				
 				default:
-					Toast.makeText(bluetooth_manager, (String)msg.obj, Toast.LENGTH_LONG).show();
+					Toast.makeText(bluetooth_manager, (String)msg.obj, Toast.LENGTH_SHORT).show();
 			}
 			
 		}

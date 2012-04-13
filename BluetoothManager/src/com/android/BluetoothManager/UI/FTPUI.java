@@ -200,12 +200,12 @@ public class FTPUI extends ListActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		bluetooth_manager.app_in_foreground = false;
+		
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		bluetooth_manager.app_in_foreground = true;
+		
 	}
 }
