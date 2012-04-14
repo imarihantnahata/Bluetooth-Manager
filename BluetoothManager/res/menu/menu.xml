@@ -6,5 +6,10 @@
         android:icon="@drawable/ic_tab_chat"
         android:title="@string/string_start_chat">
     </item>
+    <item
+        android:id="@+id/menu_endChat"
+        android:icon="@drawable/ic_tab_chat"
+        android:title="@string/string_end_chat">
+    </item>
 
 </menu>

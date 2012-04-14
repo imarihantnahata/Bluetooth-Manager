@@ -24,7 +24,7 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 
 	public ArrayList<String> deviceAddresses;
 	public ArrayList<String> deviceNames;
-	private ArrayList<ListView> listViews;
+	public ArrayList<ListView> listViews;
 	
 	HashMap<String, ArrayAdapter<String>> conversation_map;
 
@@ -70,19 +70,19 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 	
 	@Override
 	public String getTitle(int position) {
-		Log.d(TAG, " +++ getTitle() Called");
+		//Log.d(TAG, " +++ getTitle() Called");
 		return deviceNames.get(position);
 	}
 
 	@Override
 	public int getCount() {
-		Log.d(TAG, " +++ getCount() Called"+ deviceNames.size());
-		return deviceNames.size();
+		//Log.d(TAG, " +++ getCount() Called"+ deviceNames.size());
+		return deviceAddresses.size();
 	}
 
 	@Override
 	public Object instantiateItem(ViewGroup pager, int position) {
-		Log.d(TAG, " +++ instantiateItem Called");
+		//Log.d(TAG, " +++ instantiateItem Called");
 		ListView v = listViews.get(position);
 		((ViewPager) pager).addView(v, 0);
 		return v;
@@ -90,35 +90,35 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 
 	@Override
 	public void destroyItem(View pager, int position, Object view) {
-		Log.d(TAG, " +++ destroyItem Called");
+		//Log.d(TAG, " +++ destroyItem Called");
 		((ViewPager) pager).removeView((ListView) view);
 	}
 
 	@Override
 	public boolean isViewFromObject(View view, Object object) {
-		Log.d(TAG, " +++ isViewFromObject Called");
+		//Log.d(TAG, " +++ isViewFromObject Called");
 		return view.equals(object);
 	}
 
 	@Override
 	public void finishUpdate(View view) {
-		Log.d(TAG, " +++ finishUpdate Called");
+		//Log.d(TAG, " +++ finishUpdate Called");
 	}
 
 	@Override
 	public void restoreState(Parcelable p, ClassLoader c) {
-		Log.d(TAG, " +++ restoreState Called");
+		//Log.d(TAG, " +++ restoreState Called");
 	}
 
 	@Override
 	public Parcelable saveState() {
-		Log.d(TAG, " +++ saveState Called");
+		//Log.d(TAG, " +++ saveState Called");
 		return null;
 	}
 
 	@Override
 	public void startUpdate(View view) {
-		Log.d(TAG, " +++ startUpdate Called");
+		//Log.d(TAG, " +++ startUpdate Called");
 	}
 
 	public void printContents(ArrayList<String> list)

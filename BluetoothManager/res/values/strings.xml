@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, UI!</string>
     <string name="app_name">BluetoothManager</string>
     <string name="DISCOVERABLE_MODE_NOT_ENABLED">Discoverable Mode Not Enabled</string>
     <string name="WARNING_MESSAGE">Warning: Discoverable mode has not been enabled.\n\nDevices which have not connected to your device before will not even know that it exists.\n\nWould you like to enable discoverable mode?</string>
@@ -17,6 +16,7 @@
 	<string name="ROUTING_TO_RADIO">com.android.BluetoothManager.ROUTING_TO_RADIO</string>
 	<string name="ROUTING_TO_UI">com.android.BluetoothManager.ROUTING_TO_UI</string>
 	<string name="string_start_chat">New Chat</string>
+	<string name="string_end_chat">End Chat</string>
 	<string name="DISCOVERY_COMPLETE">com.android.BluetoothManager.SCAN_COMPLETE</string>
 	<string name="up_one_level">..</string>
     <string name="current_dir">.</string>
