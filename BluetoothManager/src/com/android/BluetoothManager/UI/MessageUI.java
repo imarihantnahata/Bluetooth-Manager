@@ -49,9 +49,10 @@ public class MessageUI extends Activity {
 		if (requestCode == GET_DEVICE_FOR_MSG && resultCode == RESULT_OK) {
 			String device = data
 					.getStringExtra(DeviceListActivity.DEVICE_ADDRESS);
+			String name = data.getStringExtra(DeviceListActivity.DEVICE_NAME);
 			String msg = "msg,"+msg_input.getText().toString();
 			Toast.makeText(this, device, Toast.LENGTH_SHORT).show();
-			bluetooth_manager.sendDataToRoutingFromUI(device, msg, MSG_TYPE);
+			bluetooth_manager.sendDataToRoutingFromUI(device, name, msg, MSG_TYPE);
 		}
 	}
 

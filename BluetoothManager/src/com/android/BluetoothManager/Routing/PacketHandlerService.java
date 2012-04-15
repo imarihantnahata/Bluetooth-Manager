@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.BluetoothManager.Routing.Packet_types.DataPacket;
 import com.android.BluetoothManager.Routing.Packet_types.RadioPacket;
@@ -79,6 +80,8 @@ public class PacketHandlerService extends Thread {
 	void processUIPacket(UIPacket ui_packet) {
 		if ((System.currentTimeMillis() / 1000 - ui_packet.getTimestamp()) > 150) {
 			RoutingPacketReceiver.objectsFromUI.remove(ui_packet);
+			String msg = "Couldn't find route to "+ui_packet.getDeviceName();
+			RouteTable.bluetooth_manager.ui_handler.obtainMessage(1, msg).sendToTarget();
 		} else {
 			Log.d(TAG,
 					"Difference: "

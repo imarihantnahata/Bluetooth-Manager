@@ -116,11 +116,12 @@ public class BluetoothManagerApplication extends Application {
 		return connection_manager.getPairedDevices();
 	}
 
-	public void sendDataToRoutingFromUI(String device, String msg, String type) {
+	public void sendDataToRoutingFromUI(String device, String name, String msg, String type) {
 
 		Intent intent = new Intent();
 		intent.setAction(getResources().getString(R.string.UI_TO_ROUTING));
 		intent.putExtra("device", device);
+		intent.putExtra("name", name);
 		intent.putExtra("msg", msg);
 		Log.d(TAG, "Sending msg to Routing from UI :" + msg);
 		sendBroadcast(intent);

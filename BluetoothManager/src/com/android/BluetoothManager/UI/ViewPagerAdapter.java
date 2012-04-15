@@ -64,10 +64,13 @@ public class ViewPagerAdapter extends PagerAdapter implements TitleProvider {
 		return conversation_map.get(deviceAddresses.get(position));
 	}
 
-	public String getDevice(int position) {
+	public String getDeviceAddress(int position) {
 		return deviceAddresses.get(position);
 	}
 	
+	public String getDeviceName(int position) {
+		return deviceAddresses.get(position);
+	}
 	@Override
 	public String getTitle(int position) {
 		//Log.d(TAG, " +++ getTitle() Called");

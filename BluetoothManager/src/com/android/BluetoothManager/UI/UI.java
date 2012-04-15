@@ -1,16 +1,17 @@
 package com.android.BluetoothManager.UI;
 
-import com.android.BluetoothManager.Application.BluetoothManagerApplication;
-import com.android.BluetoothManager.Application.R;
-
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.TabHost;
 import android.widget.Toast;
+
+import com.android.BluetoothManager.Application.BluetoothManagerApplication;
+import com.android.BluetoothManager.Application.R;
 
 public class UI extends TabActivity {
 
@@ -19,6 +20,8 @@ public class UI extends TabActivity {
 	
 	//static variable indicating if DeviceListActivity is Searching
 	static boolean is_UI_searching;
+
+	private static String TAG = "UI";
 		
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +66,7 @@ public class UI extends TabActivity {
 	public final Handler ui_handler = new Handler(){
 		@Override
 		public void handleMessage(Message msg) {
+			Log.d(TAG ,"In Handle msg: "+msg.what);
 			switch(msg.what)
 			{
 				

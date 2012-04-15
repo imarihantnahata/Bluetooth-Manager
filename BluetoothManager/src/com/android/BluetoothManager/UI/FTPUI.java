@@ -175,10 +175,11 @@ public class FTPUI extends ListActivity {
 		if (requestCode == GET_DEVICE_TO_SEND && resultCode == RESULT_OK) {
 			String device = data
 					.getStringExtra(DeviceListActivity.DEVICE_ADDRESS);
+			String name = data.getStringExtra(DeviceListActivity.DEVICE_NAME);
 			String msg = "file," + fileToSend.getName() + ","
 					+ readFileAsString(fileToSend.getPath());
 			Toast.makeText(this, device, Toast.LENGTH_SHORT).show();
-			UI.bluetooth_manager.sendDataToRoutingFromUI(device, msg, MSG_TYPE);
+			UI.bluetooth_manager.sendDataToRoutingFromUI(device, name, msg, MSG_TYPE);
 		}
 	}
 

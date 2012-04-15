@@ -7,15 +7,25 @@ package com.android.BluetoothManager.Routing.Packet_types;
 public class UIPacket {
 	
 	String deviceToSend;
+	String deviceName;
 	String msg;
 	long timestamp;
 	boolean searching=false;
 	
-	public UIPacket(String deviceToSend, String msg) {
+	public UIPacket(String deviceToSend, String deviceName, String msg) {
 		super();
 		this.deviceToSend = deviceToSend;
+		this.deviceName = deviceName;
 		this.msg = msg;
 		timestamp=System.currentTimeMillis()/1000;
+	}
+
+	public String getDeviceName() {
+		return deviceName;
+	}
+
+	public void setDeviceName(String deviceName) {
+		this.deviceName = deviceName;
 	}
 
 	public String getDeviceToSend() {

@@ -26,6 +26,7 @@ public class ChatUI extends Activity {
 	private TitlePageIndicator indicator;
 	private ArrayAdapter<String> currentAdapter = null;
 	private String currentDevice = null;
+	private String currentName = null;
 
 	static Button chat_msg_send;
 	static EditText chat_edit_text;
@@ -87,10 +88,12 @@ public class ChatUI extends Activity {
 		if(position == -1 ){
 			currentAdapter = null;
 			currentDevice = null;
+			currentName = null;
 			return;
 		}
 		currentAdapter = adapter.getChatAdapter(position);
-		currentDevice = adapter.getDevice(position);
+		currentDevice = adapter.getDeviceAddress(position);
+		currentName = adapter.getDeviceName(position);
 	}
 
 	public void sendChatMsg(View v) {
@@ -98,7 +101,7 @@ public class ChatUI extends Activity {
 		currentAdapter.add("me: " + msg);
 		msg = "chat," + msg;
 		bluetooth_manager
-				.sendDataToRoutingFromUI(currentDevice, msg, CHAT_TYPE);
+				.sendDataToRoutingFromUI(currentDevice, currentName, msg, CHAT_TYPE);
 		chat_edit_text.setText("");
 		chat_edit_text.clearFocus();
 	}
@@ -169,7 +172,7 @@ public class ChatUI extends Activity {
 				removeChat(position);
 			} else {
 				Toast.makeText(bluetooth_manager, "Please start a chat first",
-						Toast.LENGTH_LONG);
+						Toast.LENGTH_LONG).show();
 			}
 			break;
 		default:

@@ -42,8 +42,9 @@ public class RoutingPacketReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 
 		String device = intent.getExtras().getString("device");
+		String name = intent.getExtras().getString("name");
 		String msg = intent.getExtras().getString("msg");
-
+		
 		if (intent.getAction().equals(
 				bluetooth_manager.getResources().getString(
 						R.string.UI_TO_ROUTING))) {
@@ -51,7 +52,7 @@ public class RoutingPacketReceiver extends BroadcastReceiver {
 					"Received: " + msg + " from UI for deivce" + device)
 					.sendToTarget();
 
-			UIPacket ui_packet = new UIPacket(device, msg);
+			UIPacket ui_packet = new UIPacket(device, name, msg);
 			Log.d(TAG, "Pushing down msg: " + msg + " to " + device
 					+ " on queue");
 			objectsFromUI.add(ui_packet);
