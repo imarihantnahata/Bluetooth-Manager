@@ -3,3 +3,9 @@ chat with other Bluetooth enabled Android devices running the app.
 
 The application will try to send data to the destination device even if it is not available within its reach by a reactive 
 routing protocol (based on the DYMO protocol). A connection with multiple hops is established if the topology is available.
+
+The application uses a protocol similar to the DYMO, but highly stripped down.
+
+An RREQ request is 'broadcasted' by searching for all devices it can send to, create connections to them and then
+send packets in the form of strings written on their sockets. Connections are closed periodically if not in use. 
+However, the user has to allow the device to be discoverable periodically, which we can hopefully overcome.
